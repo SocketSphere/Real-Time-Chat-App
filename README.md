@@ -31,7 +31,6 @@ This app enables seamless 1-on-1 and group chat messaging, file sharing, and vid
 ## 📁 Repository Structure
 
 ```
-
 /backend        # Express server, API routes, Socket.io server
 /frontend       # React app, components, pages, context
 /README.md      # Project overview and documentation
