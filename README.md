@@ -7,7 +7,6 @@ Welcome to **SocketSphere**’s flagship project: a **Real-Time Chat Application
 This app enables seamless 1-on-1 and group chat messaging, file sharing, and video calls — all in real time.
 
 ---
-
 ## 🚀 Features
 
 - 🔐 User authentication with JWT  
