@@ -7,6 +7,7 @@ This app enables seamless 1-on-1 and group chat messaging, file sharing, and vid
 
 ---
 
+
 ## 🚀 Features
 
 - 🔐 User authentication with JWT  
