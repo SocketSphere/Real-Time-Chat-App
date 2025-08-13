@@ -1,6 +1,5 @@
 ```markdown
 # SocketSphere – Real-Time Chat App
-
 Welcome to **SocketSphere**’s flagship project: a **Real-Time Chat Application** built with the MERN stack and powered by Socket.io and WebRTC.
 
 This app enables seamless 1-on-1 and group chat messaging, file sharing, and video calls — all in real time.
