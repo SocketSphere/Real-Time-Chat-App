@@ -1,4 +1,3 @@
-
 ```markdown
 # SocketSphere – Real-Time Chat App
 
