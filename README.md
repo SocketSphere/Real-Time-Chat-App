@@ -1,4 +1,3 @@
-
 ```markdown
 # SocketSphere – Real-Time Chat App
 Welcome to **SocketSphere**’s flagship project: a **Real-Time Chat Application** built with the MERN stack and powered by Socket.io and WebRTC.
@@ -6,8 +5,6 @@ Welcome to **SocketSphere**’s flagship project: a **Real-Time Chat Application
 This app enables seamless 1-on-1 and group chat messaging, file sharing, and video calls — all in real time.
 
 ---
-
-
 ## 🚀 Features
 
 - 🔐 User authentication with JWT  
@@ -31,7 +28,6 @@ This app enables seamless 1-on-1 and group chat messaging, file sharing, and vid
 ## 📁 Repository Structure
 
 ```
-
 /backend        # Express server, API routes, Socket.io server
 /frontend       # React app, components, pages, context
 /README.md      # Project overview and documentation
