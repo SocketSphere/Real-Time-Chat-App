@@ -2,10 +2,10 @@ import { Link } from "react-router-dom";
 
 const Navbar = () => {
   return (
-    <nav className="navbar bg-white shadow-md px-4 md:px-8">
+    <nav className="navbar bg-white shadow-md px-4 sticky top-0 z-50 md:px-8">
       {/* Branding */}
       <div className="flex-1">
-        <Link href="/"
+        <Link to="/"
           className="btn btn-ghost normal-case text-2xl sm:text-2xl font-extrabold tracking-tight flex items-center"
         >
           <span className="text-blue-600">Chat</span>
@@ -13,17 +13,17 @@ const Navbar = () => {
         </Link>
       </div>
       {/* Left Section */}
-      {/* <div className="flex-none lg:hidden">
+      <div className="flex-none lg:hidden">
         <Link className="btn btn-ghost normal-case text-xl font-bold">Menu</Link>
-      </div> */}
+      </div>
 
       {/* Navigation Links */}
       <div className="hidden lg:flex navbar-center">
         <ul className="menu menu-horizontal px-1 gap-2 text-gray-700 font-medium">
-          <li><Link href="/" className="hover:text-blue-600">Home</Link></li>
-          <li><Link href="chat" className="hover:text-blue-600">Chats</Link></li>
-          <li><Link href="contact" className="hover:text-blue-600">Contacts</Link></li>
-          <li><Link href="group" className="hover:text-blue-600">Groups</Link></li>
+          <li><Link to="/" className="hover:text-blue-600">Home</Link></li>
+          <li><Link to="/chat" className="hover:text-blue-600">Chats</Link></li>
+          <li><Link to="/contact" className="hover:text-blue-600">Contacts</Link></li>
+          <li><Link to="/group" className="hover:text-blue-600">Groups</Link></li>
           <li>
             <details className="group">
               <summary className="cursor-pointer hover:text-blue-600">More</summary>
@@ -79,7 +79,7 @@ const Navbar = () => {
           </div>
           <ul
             tabIndex="0"
-            className="menu dropdown-content bg-gray-700 rounded-lg shadow-lg mt-3 w-52 p-2"
+            className="menu dropdown-content bg-gray-300 rounded-lg shadow-lg mt-3 w-52 p-2"
           >
             <li>
               <Link className="justify-between hover:bg-gray-100 rounded-md">
