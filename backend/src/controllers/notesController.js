@@ -9,15 +9,18 @@ export async function getAllNotes(req,res){
         console.error("fetched successfully",error)
     }
 }
+export function getNoteById(req,res){
+    console.log("Here is Id ")
+}
 
-export function createNotes(req,res){
+export function createNote(req,res){
     res.status(201).send("All notes create successfully");
 }
 
-export function updateNotes(req,res){
+export function updateNote(req,res){
     res.status(200).send("update successfully")
 }
 
-export function deleteNotes(req,res){
+export function deleteNote(req,res){
     res.status(200).send("Note deleted successfully");
 }
