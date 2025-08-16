@@ -1,28 +1,28 @@
-
-import { Route, Routes } from 'react-router'
-import SignUp from './components/SignUp'
-import About from './components/Chat'
-import Login from './components/Contact'
-import Home from './pages/Home'
-import NotFound from './components/NotFound'
-import Chat from './components/Chat'
+import { Routes, Route } from "react-router-dom"
+import DashboardLayout from "@/layouts/DashboardLayout"
+import Home from "./pages/Home"
+import Chat from "./components/Chat"
 import Contact from "./components/Contact"
 import Group from "./components/Group"
+import NotFound from "./components/NotFound"
 
 function App() {
   return (
-    <div data-theme="forest">
+    <div >
       <Routes>
+      {/* Routes with Navbar + Sidebar */}
+      <Route element={<DashboardLayout />}>
         <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/signup" element={<SignUp/>} />
-        <Route path="/chat" element={<Chat/>}/>
-        <Route path="/contact" element={<Contact/>}/>
-        <Route path="*" element={<NotFound />} />
-        <Route path="/group" element={<Group/>}/>
-      </Routes>
+        <Route path="/chat" element={<Chat />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/group" element={<Group />} />
+      </Route>
+
+      {/* Routes without Navbar + Sidebar */}
+      <Route path="*" element={<NotFound />} />
+    </Routes>
     </div>
+    
   )
 }
 
