@@ -9,5 +9,9 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "lucide-react": "^0.539.0",
+    "tailwindcss-animate": "^1.0.7"
+  }
 }

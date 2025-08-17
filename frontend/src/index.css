@@ -1,0 +1,10 @@
+/* You can add Tailwind directives later */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Optional custom styles */
+body {
+  margin: 0;
+  font-family: sans-serif;
+}
