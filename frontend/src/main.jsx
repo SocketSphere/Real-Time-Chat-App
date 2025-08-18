@@ -5,7 +5,7 @@ import { BrowserRouter } from 'react-router-dom'
 import App from './App'
 import './index.css'
 import Navbar from "@/components/Navbar.jsx"
-
+// import {NavigationMenuDemo} from "@/components/NavigationMenuDemo.jsx"
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
