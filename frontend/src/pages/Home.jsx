@@ -4,17 +4,22 @@ import Hero from "../components/Hero"
 import Feature from "../components/Feature"
 import Last from "../components/Last"
 import Conversation from "../components/Conversation"
+import Order from "../components/Order"
+import Subscribe from "../components/Subscribe"
+import {InfiniteMovingCardsDemo} from "../components/inifinteCards"
 
 const Home = () => {
   return (
     <div>
         <Hero/>
-        <Conversation/>
-        <Footer/>
         <Feature/>
-        <Last/>
-
         <BelowFeature/>
+        <Conversation/>
+        <Order/>
+        <Last/>
+        <InfiniteMovingCardsDemo/>
+        <Subscribe/>
+        <Footer/>
     </div>
   )
 }
