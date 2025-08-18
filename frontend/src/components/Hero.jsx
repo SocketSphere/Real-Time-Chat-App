@@ -18,19 +18,19 @@ const Hero = () => {
           Start Chatting Now <ArrowBigRight className="inline-block ml-2" />
         </button>
 
-        <div className="*:data-[slot=avatar]:ring-background flex -space-x-2 *:data-[slot=avatar]:ring-2 *:data-[slot=avatar]:grayscale gap-5">
+        <div className="*:data-[slot=avatar]:ring-background flex -space-x-2 *:data-[slot=avatar]:ring-2 *:data-[slot=avatar]:grayscale gap-20">
           <div className="flex items-center">
             <Avatar>
-              <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+              <AvatarImage src="/a1.jpg" alt="@shadcn" />
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
             <Avatar>
-              <AvatarImage src="https://github.com/leerob.png" alt="@leerob" />
+              <AvatarImage src="/a2.jpg" alt="@leerob" />
               <AvatarFallback>LR</AvatarFallback>
             </Avatar>
             <Avatar>
               <AvatarImage
-                src="https://github.com/evilrabbit.png"
+                src="/a3.jpg"
                 alt="@evilrabbit"
               />
               <AvatarFallback>ER</AvatarFallback>
