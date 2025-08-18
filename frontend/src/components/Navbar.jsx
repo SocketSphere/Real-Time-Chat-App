@@ -34,6 +34,7 @@ const Navbar = () => {
             </details>
           </li>
         </ul>
+
       </div>
 
       {/* Right Section */}
