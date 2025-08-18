@@ -37,7 +37,7 @@ const Hero = () => {
             </Avatar>
           </div>
           <div className="ml-20"> 
-            <h1 className="font-bold">2200+</h1>
+            <h1 className="font-bold text-2xl">2200+</h1>
             <div>
               <p className="text-gray-500">Happy Users</p>
             </div>
