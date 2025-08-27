@@ -1,13 +1,13 @@
 // DashboardLayout.jsx
 import { Outlet } from "react-router-dom"
-import Navbar from "../components/Navbar"
+// import Navbar from "../components/Navbar"
 import { SidebarProvider } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
 
 const DashboardLayout = () => {
   return (
     <div className="flex flex-col min-h-screen">
-    <Navbar />
+    {/* <Navbar /> */}
 {/*  */}
     <div className="flex flex-1">
       <div className="w-64">

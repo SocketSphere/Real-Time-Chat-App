@@ -1,14 +1,23 @@
-import BelowFeature from "../components/belowFeature"
-import Footer from "../components/Footer"
-import Hero from "../components/Hero"
-import Feature from "../components/Feature"
-import Last from "../components/Last"
-import Conversation from "../components/Conversation"
-import Order from "../components/Order"
+import { useEffect } from "react"
+import BelowFeature from "../components/(HomePage)/BelowFeature"
+import Footer from "../components/(HomePage)/Footer"
+import Hero from "../components/(HomePage)/Hero"
+import Feature from "../components/(HomePage)/Feature"
+import Last from "../components/(HomePage)/Last"
+import Conversation from "../components/(HomePage)/Conversation"
+import Order from "../components/(HomePage)/Order"
 import Subscribe from "../components/Subscribe"
-import {InfiniteMovingCardsDemo} from "../components/inifinteCards"
-
+import {InfiniteMovingCardsDemo} from "../components/(HomePage)/InifinteCards"
+import Price from "../components/(Navbar)/Price"
+import { useLocation } from "react-router"
 const Home = () => {
+  const location= useLocation();
+  useEffect(() => {
+    if (location.state?.scrollToPricing) {
+      const section = document.getElementById("pricing");
+      section?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [location]);
   return (
     <div>
         <Hero/>
@@ -17,6 +26,7 @@ const Home = () => {
         <Conversation/>
         <Order/>
         <Last/>
+        <Price/>
         <InfiniteMovingCardsDemo/>
         <Subscribe/>
         <Footer/>
