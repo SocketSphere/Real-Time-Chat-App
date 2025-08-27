@@ -1,6 +1,15 @@
-import { useLocation } from "react-router-dom"
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react"
-import { NavLink } from "react-router-dom"
+import { useLocation, NavLink } from "react-router-dom"
+import {
+  Calendar,
+  Home,
+  Inbox,
+  Search,
+  Settings,
+  Users,
+  User,
+  Bell,
+  Folder,
+} from "lucide-react"
 
 import {
   Sidebar,
@@ -12,43 +21,115 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-// Menu items
-const items = [
-  { title: "Home", url: "/", icon: Home },
-  { title: "Inbox", url: "/chat", icon: Inbox },
-  { title: "Calendar", url: "/calendar", icon: Calendar },
+
+// Main navigation items
+const mainItems = [
+  { title: "Inbox", url: "/inbox", icon: Inbox },
+  { title: "Groups", url: "/group", icon: Users },
+  { title: "Contacts", url: "/contact", icon: User },
   { title: "Search", url: "/search", icon: Search },
+]
+
+// Productivity / utilities
+const utilityItems = [
+  { title: "Calendar", url: "/calendar", icon: Calendar },
+  { title: "Notifications", url: "/notifications", icon: Bell },
+  { title: "Files", url: "/files", icon: Folder },
+]
+
+// Settings
+const settingsItems = [
   { title: "Settings", url: "/settings", icon: Settings },
 ]
 
 export function AppSidebar() {
   const location = useLocation()
 
-  // Change sidebar bg color depending on current page    ${bgColor}`
-  // const bgColor = location.pathname === "/" ? "bg-black text-white" : "bg-white text-gray-800"
-
   return (
-    <Sidebar className={"w-64 min-h-screen mt-20" }>
+    <Sidebar className="w-64 min-h-screen mt-20">
       <SidebarContent>
+        {/* Main section */}
         <SidebarGroup>
-          <SidebarGroupLabel>Application</SidebarGroupLabel>
+          <SidebarGroupLabel>Main</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-            {items.map((item) => (
-              <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton asChild>
-                  <NavLink
-                    to={item.url}
-                    className={({ isActive }) =>
-                      `flex items-center gap-2 px-2 py-1 rounded-md 
-                      ${isActive ? "bg-gray-800 text-white" : "text-gray-700 dark:text-gray-200"}`
-                    }
-                  >
-                    <item.icon />
-                    <span>{item.title}</span>
-                  </NavLink>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+              {mainItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <NavLink
+                      to={item.url}
+                      className={({ isActive }) =>
+                        `flex items-center gap-2 px-2 py-1 rounded-md transition-colors
+                        ${
+                          isActive
+                            ? "bg-gray-800 text-white"
+                            : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        }`
+                      }
+                    >
+                      <item.icon className="h-4 w-4" />
+                      <span>{item.title}</span>
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Utilities section */}
+        <SidebarGroup>
+          <SidebarGroupLabel>Productivity</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {utilityItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <NavLink
+                      to={item.url}
+                      className={({ isActive }) =>
+                        `flex items-center gap-2 px-2 py-1 rounded-md transition-colors
+                        ${
+                          isActive
+                            ? "bg-gray-800 text-white"
+                            : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        }`
+                      }
+                    >
+                      <item.icon className="h-4 w-4" />
+                      <span>{item.title}</span>
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Settings section */}
+        <SidebarGroup>
+          <SidebarGroupLabel>Account</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {settingsItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <NavLink
+                      to={item.url}
+                      className={({ isActive }) =>
+                        `flex items-center gap-2 px-2 py-1 rounded-md transition-colors
+                        ${
+                          isActive
+                            ? "bg-gray-800 text-white"
+                            : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        }`
+                      }
+                    >
+                      <item.icon className="h-4 w-4" />
+                      <span>{item.title}</span>
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
