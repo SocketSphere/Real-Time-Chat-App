@@ -1,0 +1,5 @@
+// "@upstash/ratelimit": "^2.0.6",
+//     "@upstash/redis": "^1.35.3",
+// audit=false
+
+// # .npmrc
