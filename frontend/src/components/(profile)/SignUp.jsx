@@ -33,7 +33,7 @@ const SignUp = () => {
       );
       console.log(response.data);
       alert("Sign up successfully");
-      navigate("/login");
+      navigate("/");
     } catch (err) {
       console.error(err.response?.data || err.message);
       alert("Sign up failed");
