@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router";
 
 const Last = () => {
   return (
@@ -9,9 +10,9 @@ const Last = () => {
         Faster <br />
         Every Second
       </h1>
-      <button className="bg-white text-orange-600 font-semibold px-10 py-5 rounded-2xl shadow-lg hover:scale-105 hover:bg-gray-100 transition-transform duration-300">
+      <Link to="/chat" className="bg-white text-orange-600 font-semibold px-10 py-5 rounded-2xl shadow-lg hover:scale-105 hover:bg-gray-100 transition-transform duration-300">
         Start Chatting Now
-      </button>
+      </Link>
     </section>
   );
 };

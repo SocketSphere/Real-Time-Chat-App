@@ -2,6 +2,7 @@
 // import Image from 'next/image';
 import { ArrowBigRight } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Link } from "react-router"
 
 const Hero = () => {
   return (
@@ -14,9 +15,13 @@ const Hero = () => {
         <p className="text-gray-600 text-lg md:text-xl">
           Join our online chat platform to send messages, share media, and stay connected with your friends anytime, anywhere.
         </p>
-        <button className="text-white rounded-md ml-6 m-4 p-4 bg-orange-400 hover:bg-orange-500 hover:text-gray-800 hover:rounded-md duration-300">
+        <Link 
+          to="/chat" 
+          className="inline-block mt-6 mb-2 px-6 py-3 bg-orange-400 text-white font-medium rounded-md hover:bg-orange-500 hover:text-gray-800 duration-300"
+        >
           Start Chatting Now <ArrowBigRight className="inline-block ml-2" />
-        </button>
+        </Link>
+
 
         <div className="*:data-[slot=avatar]:ring-background flex -space-x-2 *:data-[slot=avatar]:ring-2 *:data-[slot=avatar]:grayscale gap-20">
           <div className="flex items-center">

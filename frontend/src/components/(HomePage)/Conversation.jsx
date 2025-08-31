@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router";
 
 const Conversation = () => {
   return (
@@ -14,9 +15,9 @@ const Conversation = () => {
           conversations. Share updates, answer questions, and build stronger
           connections in real-time.
         </p>
-        <button className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-6 py-3 rounded-xl shadow-md transition duration-300">
+        <Link to="/chat" className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-6 py-3 rounded-xl shadow-md transition duration-300">
           Start Chatting Now
-        </button>
+        </Link>
       </div>
 
       {/* Image Section */}

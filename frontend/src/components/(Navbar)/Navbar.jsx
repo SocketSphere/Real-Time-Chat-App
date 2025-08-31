@@ -46,7 +46,7 @@ const Navbar = () => {
       <div className="flex-1">
         <Link
           to="/"
-          className="btn btn-ghost normal-case text-2xl font-extrabold tracking-tight flex items-center"
+          className="btn btn-ghost  normal-case text-2xl font-extrabold tracking-tight flex items-center"
         >
           <span className="text-blue-600">Chat</span>
           <span className="text-red-400 -ml-1">Master</span>
@@ -101,8 +101,9 @@ const Navbar = () => {
                 </li>
                 <li>
                   <button
-                    className="hover:text-blue-600"
+                    className="hover:bg-gray-100 rounded-md block p-1"
                     onClick={handleScrollToPricing}
+                    
                   >
                     Pricing
                   </button>
@@ -168,13 +169,13 @@ const Navbar = () => {
               className="menu dropdown-content bg-gray-300 rounded-lg shadow-lg mt-3 w-52 p-2"
             >
               <li>
-                <Link className="justify-between hover:bg-gray-100 rounded-md">
+                <Link to="/Profile" className="justify-between hover:bg-gray-100 rounded-md">
                   Profile <span className="badge badge-primary">New</span>
                 </Link>
               </li>
-              <li>
-                <Link className="hover:bg-gray-100 rounded-md">Settings</Link>
-              </li>
+              {/* <li>
+                <Link to="/setting-profile" className="hover:bg-gray-100 rounded-md">Settings</Link>
+              </li> */}
               <li>
                 <button
                   onClick={handleLogout}
