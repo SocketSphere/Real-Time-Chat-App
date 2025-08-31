@@ -1,47 +1,53 @@
+// import path from "path";
+import connectDB  from "./config/db.js";
 import express from "express";
-import cors from "cors";
 import dotenv from "dotenv";
-import path from "path";
+import cors from "cors";
 
-import notesRoutes from "./routes/notesRoutes.js";
-import { connectDB } from "./config/db.js";
-import rateLimiter from "./middleware/ratelimiter.js";
+import authRoutes from "./routes/authRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import groupRoutes from "./routes/groupRoutes.js";
+import messageRoutes from "./routes/messageRoutes.js";
+import planRoutes from "./routes/planRoutes.js";
+import subscriptionRoutes from "./routes/subscriptionRoutes.js";
 
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5001;
-const __dirname = path.resolve();
+app.use(cors());
+app.use(express.json());
 
-// middleware
-if (process.env.NODE_ENV !== "production") {
-  app.use(
-    cors({
-      origin: "http://localhost:5173",
-    })
-  );
-}
-app.use(express.json()); // this middleware will parse JSON bodies: req.body
-app.use(rateLimiter);
+// Routes
+app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/groups", groupRoutes);
+app.use("/api/messages", messageRoutes);
+app.use("/api/plans", planRoutes);
+app.use("/api/subscriptions", subscriptionRoutes);
 
-// our simple custom middleware
-// app.use((req, res, next) => {
-//   console.log(`Req method is ${req.method} & Req URL is ${req.url}`);
-//   next();
-// });
-
-app.use("/api/notes", notesRoutes);
-
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../frontend/dist")));
-
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
-  });
-}
+const PORT=process.env.PORT || 5000
 
 connectDB().then(() => {
   app.listen(PORT, () => {
     console.log("Server started on PORT:", PORT);
   });
-});
+})
+  .catch(err => console.log(err));
+
+
+
+
+
+
+
+
+
+// app.use(rateLimiter);
+
+
+
+// connectDB().then(() => {
+//   app.listen(process.env.PORT || 5001, () => {
+//     console.log("Server started on PORT:", PORT);
+//   });
+// });

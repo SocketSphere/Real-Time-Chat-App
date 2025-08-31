@@ -16,6 +16,7 @@ import SignUp from "./components/(profile)/SignUp"
 import Login from "./components/(profile)/Login"
 import Notifications from "./components/AppSidebar/Notifications"
 import Price from "./components/(Navbar)/Price"
+import Setting from "./components/AppSidebar/Setting"
 function App() {
 
   return (
@@ -27,10 +28,7 @@ function App() {
         <Route path="/signup" element={<SignUp/>}/>
         <Route path="/login" element={<Login/>}/>
         <Route path="/price" element={<Price/>}/>
-
         <Route path="/about-us" element={<AboutUs/>}/>
-
-
         <Route path="*" element={<NotFound/>}/>
 
         <Route element={<DashboardLayout/>}>
@@ -41,7 +39,7 @@ function App() {
            <Route path="/contact" element={<Contact/>}/>
            <Route path="/group" element={<Group/>}/>
            <Route path="/contact" element={<Contact/>}/>
-
+           <Route path="/settings" element={<Setting/>}/>
            <Route path="/notifications" element={<Notifications/>}/>
         </Route>
        

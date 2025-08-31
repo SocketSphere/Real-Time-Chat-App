@@ -4,17 +4,21 @@ import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import App from './App'
 import './index.css'
+import { Provider } from "react-redux";
+import { store } from "./redux/store.js";
 import Navbar from "@/components/(Navbar)/Navbar.jsx"
 // import {NavigationMenuDemo} from "@/components/NavigationMenuDemo.jsx"
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
-      <div className="flex flex-col h-screen">
+      <Provider store={store}>
+        <div className="flex flex-col h-screen">
         <Navbar className="flex-shrink-0" /> {/* Fixed navbar */}
         <div className="flex-1 overflow-auto"> {/* Scrollable content */}
           <App />
         </div>
       </div>
+      </Provider>
     </BrowserRouter>
   </React.StrictMode>
 )

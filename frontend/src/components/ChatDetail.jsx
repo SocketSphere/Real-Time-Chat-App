@@ -22,7 +22,7 @@ const Home = () => {
         </div>
       </SidebarProvider>
 
-      <Footer />
+      {/* <Footer /> */}
     </div>
   )
 }
