@@ -197,7 +197,7 @@ const Group = () => {
       )}
 
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-semibold">All Groups</h2>
+        <h2 className="text-2xl font-semibold">Recommended <span className="text-orange-500">Group</span> </h2>
         <span className="text-sm text-gray-500">
           {groups.length} group{groups.length !== 1 ? 's' : ''} total
         </span>
