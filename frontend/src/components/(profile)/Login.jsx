@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { login } from "../../redux/authSlice.js";
 import axios from "axios";
-
+import toast from "react-hot-toast";
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ loginId: "", password: "" });
@@ -24,12 +24,16 @@ const Login = () => {
       );
 
       // Save token in redux
-      dispatch(login(response.data.token));
-      alert("Login successfully");
+      // dispatch(login(response.data.token));
+      dispatch(login({ token: response.data.token, user: response.data.user }));
+
+      // alert("Login successfully");
+      toast.success('Successfully Login!')
       navigate("/");
     } catch (err) {
       console.error(err.response?.data || err.message);
-      alert("Login failed");
+      // alert("Login failed");
+      toast.error("This didn't work.")
     }
   };
 

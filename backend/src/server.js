@@ -10,6 +10,7 @@ import groupRoutes from "./routes/groupRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
 import planRoutes from "./routes/planRoutes.js";
 import subscriptionRoutes from "./routes/subscriptionRoutes.js";
+import searchRoutes from "./routes/searchRoutes.js"
 
 dotenv.config();
 
@@ -23,6 +24,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/groups", groupRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/plans", planRoutes);
+app.use("/api/search", searchRoutes);
 app.use("/api/subscriptions", subscriptionRoutes);
 
 const PORT=process.env.PORT || 5000
@@ -35,19 +37,3 @@ connectDB().then(() => {
   .catch(err => console.log(err));
 
 
-
-
-
-
-
-
-
-// app.use(rateLimiter);
-
-
-
-// connectDB().then(() => {
-//   app.listen(process.env.PORT || 5001, () => {
-//     console.log("Server started on PORT:", PORT);
-//   });
-// });

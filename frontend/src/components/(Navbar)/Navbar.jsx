@@ -120,8 +120,8 @@ const Navbar = () => {
         <div className="hidden md:block">
           <input
             type="text"
-            placeholder="Search messages or users..."
-            className="input input-bordered rounded-full w-48 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            placeholder="Find Your Friend or Group..."
+            className="input bg-gray-200 h-13 input-bordered rounded-full w-48 focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
         </div>
 

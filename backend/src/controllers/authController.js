@@ -1,28 +1,36 @@
+//authController.js
+//
 import User from "../models/User.js"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 
-export const register = async (req,res)=>{
-    try{
-        const {firstName, lastName, password, loginId} = req.body;
-        
-        const existingUser = await User.findOne({loginId});
-        if(existingUser){
-            return res.status(400).json({msg:"Email or Username is already exists"})
-        }
+export const register = async (req, res) => {
+  try {
+    const { firstName, lastName, password, loginId } = req.body;
 
-        const salt = await bcrypt.genSalt(10);
-        const hashPassword = await bcrypt.hash(password,salt);
-
-        const user = new User({firstName, lastName, loginId,password:hashPassword})
-        await user.save();
-
-        res.status(201).json({msg:"User Register successfully"})
+    const existingUser = await User.findOne({ loginId });
+    if (existingUser) {
+      return res.status(400).json({ msg: "Email or Username already exists" });
     }
-    catch (err){
-        res.status(500).json({error:err.message})
-    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashPassword = await bcrypt.hash(password, salt);
+
+    const user = new User({ firstName, lastName, loginId, password: hashPassword });
+    await user.save();
+
+    // Generate JWT for new user
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "2d" });
+
+    res.status(201).json({
+      token,
+      user: { id: user._id, loginId: user.loginId, firstName: user.firstName, lastName: user.lastName },
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
+
 
 export const login = async (req, res) => {
   try {
@@ -45,7 +53,7 @@ export const login = async (req, res) => {
 
     res.json({
       token,
-      user: { id: user._id, loginId: user.loginId },
+      user: { _id: user._id, loginId: user.loginId },
     });
   } catch (err) {
     res.status(500).json({ error: err.message });

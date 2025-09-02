@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { login } from "../../redux/authSlice.js";
 
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -13,7 +15,7 @@ const SignUp = () => {
     password: "",
     confirmPassword: "",
   });
-
+  const dispatch = useDispatch();
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -32,6 +34,7 @@ const SignUp = () => {
         formData
       );
       console.log(response.data);
+      dispatch(login({ token: response.data.token, user: response.data.user }));
       alert("Sign up successfully");
       navigate("/");
     } catch (err) {
