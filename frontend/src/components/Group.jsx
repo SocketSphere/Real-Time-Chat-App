@@ -13,9 +13,7 @@ const Group = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const { user, isLogin } = useSelector((state) => state.auth);
-  // const userId = user?._id;
   const userId = user?._id || user?.id;
-
 
   // Clear messages after a delay
   const clearMessages = () => {
@@ -53,8 +51,15 @@ const Group = () => {
   };
 
   useEffect(() => {
-    fetchGroups();
+    if(isLogin && userId) {
+      fetchGroups();
+    }
+      const handler = () => fetchGroups();
+      window.addEventListener("groupUpdated", handler);
+
+      return () => window.removeEventListener("groupUpdated", handler);
   }, [isLogin, userId]);
+ 
 
   // Join a group
   const handleJoin = async (groupId) => {
@@ -74,6 +79,8 @@ const Group = () => {
       setGroups((prev) =>
         prev.map((g) => (g._id === res.data._id ? res.data : g))
       );
+      
+      // Add the joined group to joinedGroups
       setJoinedGroups((prev) => {
         if (!prev.some((g) => g._id === res.data._id)) {
           return [...prev, res.data];
@@ -83,6 +90,9 @@ const Group = () => {
       
       setSuccess(`Successfully joined ${res.data.name}`);
       clearMessages();
+      
+      // Trigger a custom event to refresh the groups list
+      window.dispatchEvent(new Event("groupUpdated"));
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.error || "Failed to join group");
@@ -118,11 +128,24 @@ const Group = () => {
       setCreating(false);
       setSuccess(`Group "${res.data.name}" created successfully!`);
       clearMessages();
+      
+      // Trigger a custom event to refresh the groups list
+      window.dispatchEvent(new Event("groupUpdated"));
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.error || "Failed to create group");
       clearMessages();
     }
+  };
+
+  // Get recommended groups (not joined, limited to 3)
+  const getRecommendedGroups = () => {
+    const notJoined = groups.filter((g) => 
+      !joinedGroups.some((jg) => jg._id === g._id)
+    );
+    
+    // Return only first 3 groups
+    return notJoined.slice(0, 3);
   };
 
   if (loading) {
@@ -199,51 +222,51 @@ const Group = () => {
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-semibold">Recommended <span className="text-orange-500">Group</span> </h2>
         <span className="text-sm text-gray-500">
-          {groups.length} group{groups.length !== 1 ? 's' : ''} total
+          Showing {getRecommendedGroups().length} of {groups.length - joinedGroups.length} available groups
         </span>
       </div>
       
-      {/* All groups */}
-      {groups.filter((g) => !joinedGroups.some((jg) => jg._id === g._id)).length === 0 ? (
+      {/* Recommended groups (limited to 3) */}
+      {getRecommendedGroups().length === 0 ? (
         <div className="bg-gray-50 rounded-lg p-6 mb-8 text-center">
           <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-500">No other groups available.</p>
+          <p className="text-gray-500">No recommended groups available.</p>
           <p className="text-sm text-gray-400 mt-2">
-            Create a new group to get started with community building.
+            {joinedGroups.length > 0 
+              ? "You've joined all available groups!" 
+              : "Create a new group to get started with community building."}
           </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-8">
-          {groups
-            .filter((g) => !joinedGroups.some((jg) => jg._id === g._id))
-            .map((g) => (
-              <div
-                key={g._id}
-                className="bg-white rounded-xl shadow-md p-5 hover:shadow-lg transition flex flex-col border border-gray-100"
-              >
-                <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mb-4">
-                  <Users className="w-8 h-8 text-blue-600" />
-                </div>
-                <h3 className="font-semibold text-lg mb-1">{g.name}</h3>
-                <p className="text-sm text-gray-500 mb-2 line-clamp-2">{g.description || "No description"}</p>
-                <div className="mt-auto">
-                  <p className="text-xs text-gray-400 mb-4">
-                    {g.members?.length || 0} members • By {g.owner?.name || "Unknown"}
-                  </p>
-                  <button
-                    onClick={() => handleJoin(g._id)}
-                    disabled={!isLogin}
-                    className={`w-full py-2 text-sm rounded font-medium ${
-                      isLogin
-                        ? "bg-green-500 hover:bg-green-600 text-white"
-                        : "bg-gray-200 cursor-not-allowed text-gray-500"
-                    }`}
-                  >
-                    {isLogin ? "Join Group" : "Login to Join"}
-                  </button>
-                </div>
+          {getRecommendedGroups().map((g) => (
+            <div
+              key={g._id}
+              className="bg-white rounded-xl shadow-md p-5 hover:shadow-lg transition flex flex-col border border-gray-100"
+            >
+              <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mb-4">
+                <Users className="w-8 h-8 text-blue-600" />
               </div>
-            ))}
+              <h3 className="font-semibold text-lg mb-1">{g.name}</h3>
+              <p className="text-sm text-gray-500 mb-2 line-clamp-2">{g.description || "No description"}</p>
+              <div className="mt-auto">
+                <p className="text-xs text-gray-400 mb-4">
+                  {g.members?.length || 0} members • By {g.owner?.name || "Unknown"}
+                </p>
+                <button
+                  onClick={() => handleJoin(g._id)}
+                  disabled={!isLogin}
+                  className={`w-full py-2 text-sm rounded font-medium ${
+                    isLogin
+                      ? "bg-green-500 hover:bg-green-600 text-white"
+                      : "bg-gray-200 cursor-not-allowed text-gray-500"
+                  }`}
+                >
+                  {isLogin ? "Join Group" : "Login to Join"}
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 

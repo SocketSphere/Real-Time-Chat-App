@@ -11,6 +11,7 @@ import messageRoutes from "./routes/messageRoutes.js";
 import planRoutes from "./routes/planRoutes.js";
 import subscriptionRoutes from "./routes/subscriptionRoutes.js";
 import searchRoutes from "./routes/searchRoutes.js"
+import contactRoutes from "./routes/contactRoutes.js";
 
 dotenv.config();
 
@@ -22,6 +23,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/groups", groupRoutes);
+app.use("/api/contacts", contactRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/plans", planRoutes);
 app.use("/api/search", searchRoutes);

@@ -1,36 +1,61 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useSelector } from "react-redux";
 
 const Search = () => {
+  const { user } = useSelector((state) => state.auth);
+  const userId = user?._id || user?.id;
+
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const handleSearch = async () => {
-  if (!query) return;
-  setLoading(true);
-  try {
-    const response = await axios.get(`http://localhost:5000/api/search?query=${query}`);
+    if (!query) return;
+    setLoading(true);
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/api/search?query=${query}`
+      );
 
-    // mark type for each item
-    const users = response.data.users.map(u => ({ ...u, type: "contact" }));
-    const groups = response.data.groups.map(g => ({ ...g, type: "group" }));
+      const users = response.data.users.map((u) => ({
+        ...u,
+        type: "contact",
+      }));
+      const groups = response.data.groups.map((g) => ({
+        ...g,
+        type: "group",
+      }));
 
-    setResults([...users, ...groups]);
-  } catch (error) {
-    console.error(error);
-    alert(`Error: ${error.message}`);
-  }
-  setLoading(false);
-};
+      setResults([...users, ...groups]);
+    } catch (error) {
+      console.error(error);
+      alert(`Error: ${error.message}`);
+    }
+    setLoading(false);
+  };
 
-
-
-  const handleAction = (item) => {
-    if (item.type === "contact") {
-      alert(`Friend request sent to ${item.name}`);
-    } else if (item.type === "group") {
-      alert(`Request to join ${item.name} sent`);
+  const handleAction = async (item) => {
+    try {
+      if (item.type === "contact") {
+        // Add to Contact
+        await axios.post("http://localhost:5000/api/contacts/add", {
+          userId,
+          friendId: item._id,
+        });
+        alert(`Added ${item.firstName} to your contacts`);
+        window.dispatchEvent(new Event("contactsUpdated"));
+      } else if (item.type === "group") {
+        // Join Group
+        await axios.post("http://localhost:5000/api/groups/join", {
+          groupId: item._id,
+          userId,
+        });
+        alert(`You joined group: ${item.name}`);
+      }
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.msg || "Action failed");
     }
   };
 
@@ -67,13 +92,15 @@ const Search = () => {
               key={item._id || item.id}
               className="bg-white shadow-md p-4 rounded-lg text-center mb-3"
             >
-              <h3 className="text-lg font-semibold text-gray-800">{item.name}</h3>
+              <h3 className="text-lg font-semibold text-gray-800">
+                {item.firstName || item.name}
+              </h3>
               <p className="text-sm text-gray-500 capitalize">{item.type}</p>
               <button
                 onClick={() => handleAction(item)}
                 className="mt-3 bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition"
               >
-                {item.type === "contact" ? "Send Friend Request" : "Join Group"}
+                {item.type === "contact" ? "Add Contact" : "Join Group"}
               </button>
             </div>
           ))}
