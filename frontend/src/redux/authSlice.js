@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const token = localStorage.getItem("token");
 const storedUser = localStorage.getItem("user");
 let user = null;
+
 try {
   user = storedUser && storedUser !== "undefined" ? JSON.parse(storedUser) : null;
 } catch {
@@ -20,18 +21,10 @@ const authSlice = createSlice({
     login: (state, action) => {
       state.isLogin = true;
       state.token = action.payload.token;
-      state.user = action.payload.user; // <-- save user object here
+      state.user = action.payload.user;
       localStorage.setItem("token", action.payload.token);
       localStorage.setItem("user", JSON.stringify(action.payload.user));
     },
-
-    // 
-    //   state.isLogin = true;
-    //   state.token = action.payload.token;
-    //   state.user = action.payload.user;
-    //   localStorage.setItem("token", action.payload.token);
-    //   localStorage.setItem("user", JSON.stringify(action.payload.user));
-    // },
     logout: (state) => {
       state.isLogin = false;
       state.token = null;
@@ -40,8 +33,10 @@ const authSlice = createSlice({
       localStorage.removeItem("user");
     },
     updateUser: (state, action) => {
-      state.user = action.payload;
-      localStorage.setItem("user", JSON.stringify(action.payload));
+      if (state.user) {
+        state.user = { ...state.user, ...action.payload };
+        localStorage.setItem("user", JSON.stringify(state.user)); // persist change
+      }
     },
   },
 });

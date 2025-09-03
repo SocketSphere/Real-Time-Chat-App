@@ -17,10 +17,16 @@ import Login from "./components/(profile)/Login"
 import Notifications from "./components/AppSidebar/Notifications"
 import Price from "./components/(Navbar)/Price"
 import Setting from "./components/AppSidebar/Setting"
+import { Toaster } from "react-hot-toast";
+
 function App() {
 
   return (
    <div>
+    <Toaster
+        position="top-center"
+        reverseOrder={false}
+      />
      <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/chat" element={<Chat/>}/>

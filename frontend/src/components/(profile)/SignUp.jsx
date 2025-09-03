@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { login } from "../../redux/authSlice.js";
+import toast from "react-hot-toast";
 
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -35,11 +36,11 @@ const SignUp = () => {
       );
       console.log(response.data);
       dispatch(login({ token: response.data.token, user: response.data.user }));
-      alert("Sign up successfully");
+      toast.success("Sign up successfully");
       navigate("/");
     } catch (err) {
       console.error(err.response?.data || err.message);
-      alert("Sign up failed");
+      toast.error("Sign up failed");
     }
   };
 

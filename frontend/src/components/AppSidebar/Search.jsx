@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { User } from "lucide-react"; // Import User icon
 
 const Search = () => {
-  const { user } = useSelector((state) => state.auth);
+  const { user, isLogin } = useSelector((state) => state.auth);
   const userId = user?._id || user?.id;
 
   const [query, setQuery] = useState("");
@@ -58,6 +60,23 @@ const Search = () => {
       alert(err.response?.data?.msg || "Action failed");
     }
   };
+
+  if (!isLogin) {
+    return (
+      <div className="p-6 flex flex-col items-center justify-center h-64">
+        <User className="w-10 h-10 animate-spin text-orange-500 mb-4" />
+        <p className="text-gray-600 text-lg text-center">
+          Please login to use the search feature.
+        </p>
+        <Link
+          to="/login"
+          className="mt-4 inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+        >
+          Go to Login
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center mt-10 px-4">

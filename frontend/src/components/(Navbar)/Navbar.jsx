@@ -8,9 +8,8 @@ const Navbar = () => {
   const location = useLocation();
   const [moreOpen, setMoreOpen] = useState(false);
   const moreRef = useRef(null);
-
+  const { user, isLogin } = useSelector((state) => state.auth); // Fixed: Get user from state
   const dispatch = useDispatch();
-  const isLogin = useSelector((state) => state.auth.isLogin);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -159,9 +158,10 @@ const Navbar = () => {
             <div tabIndex="0" className="btn btn-ghost btn-circle avatar">
               <div className="w-10 rounded-full border-2 border-blue-400">
                 <img
-                  src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                  src={user?.profileImage || "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"}
                   alt="User Avatar"
                 />
+
               </div>
             </div>
             <ul
@@ -173,9 +173,6 @@ const Navbar = () => {
                   Profile <span className="badge badge-primary">New</span>
                 </Link>
               </li>
-              {/* <li>
-                <Link to="/setting-profile" className="hover:bg-gray-100 rounded-md">Settings</Link>
-              </li> */}
               <li>
                 <button
                   onClick={handleLogout}
