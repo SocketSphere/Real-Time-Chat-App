@@ -41,8 +41,9 @@ const Contact = () => {
   // Add contact
   const handleAddContact = async (friendId) => {
     try {
-      await axios.post("http://localhost:5000/api/contacts", { userId, friendId });
+      await axios.post("http://localhost:5000/api/contacts/add", { userId, friendId });
       // Refresh contact list after adding
+      
       fetchMyContacts();
       alert("Contact added successfully!");
     } catch (err) {
