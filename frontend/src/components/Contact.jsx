@@ -102,7 +102,15 @@ const Contact = () => {
               className="bg-white rounded-2xl shadow-md p-4 flex flex-col items-center text-center hover:shadow-lg transition"
             >
               <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center mb-3">
-                <User className="w-8 h-8 text-gray-600" />
+                {c.profileImage ? (
+                  <img
+                    src={c.profileImage}
+                    alt={`${c.firstName} ${c.lastName}`}
+                    className="w-full h-full object-cover rounded-full"
+                  />
+                ) : (
+                  <User className="w-8 h-8 text-gray-600" />
+                )}
               </div>
               <h3 className="font-medium text-lg">{c.name || c.friendName}</h3>
               <p className="text-sm text-gray-500">{c.email || c.friendEmail}</p>
@@ -131,10 +139,19 @@ const Contact = () => {
             className="bg-white rounded-2xl shadow-md p-4 flex flex-col items-center text-center hover:shadow-lg transition"
           >
             <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center mb-3">
-              <User className="w-8 h-8 text-gray-600" />
+              {c.profileImage ? (
+                <img
+                  src={c.profileImage}
+                  alt={`${c.firstName} ${c.lastName}`}
+                  className="w-full h-full object-cover rounded-full"
+                />
+              ) : (
+                <User className="w-8 h-8 text-gray-600" />
+              )}
             </div>
             <h3 className="font-medium text-lg">{c.firstName} {c.lastName}</h3>
             <p className="text-sm text-gray-500">{c.loginId}</p>
+             <p className="text-sm text-gray-500">{c.bio}</p>
             <div className="flex gap-4 mt-4 text-gray-600">
               <button
                 className="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600"

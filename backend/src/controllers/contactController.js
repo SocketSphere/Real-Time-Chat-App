@@ -1,15 +1,18 @@
+// controllers/contactController.js
 import Contact from "../models/Contact.js";
 
 export const getContacts = async (req, res) => {
   try {
     const contacts = await Contact.find({ userId: req.params.userId })
-      .populate("friendId", "firstName lastName loginId email");
+      .populate("friendId", "firstName lastName loginId email profileImage bio");
 
-    const formatted = contacts.map(c => ({
+    const formatted = contacts.map((c) => ({
       _id: c._id,
       friendId: c.friendId._id,
       friendName: `${c.friendId.firstName} ${c.friendId.lastName}`,
       friendEmail: c.friendId.email,
+      profileImage: c.friendId.profileImage || "",
+      bio: c.friendId.bio || "",
     }));
 
     res.json(formatted);
@@ -17,6 +20,7 @@ export const getContacts = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
 
 
 export const addContact = async (req, res) => {

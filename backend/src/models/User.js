@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema(
     loginId: { type: String, required: true, unique: true, trim: true }, // email or username
     password:{ type: String, required: true },
     profileImage: { type: String, default: "" },
-    // bio: { type: String, default: "" },
+    bio: { type: String, default: "" },
     status: { 
       type: String, 
       enum: ["online", "offline", "away"], 
