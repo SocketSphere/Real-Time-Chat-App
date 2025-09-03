@@ -147,7 +147,16 @@ const Group = () => {
     // Return only first 3 groups
     return notJoined.slice(0, 3);
   };
-
+  if (!isLogin) {
+    return (
+      <div className="p-6 flex flex-col items-center justify-center h-64">
+        <Loader className="w-8 h-8 animate-spin text-orange-500 mb-4" />
+        <p className="text-gray-600 text-lg text-center">
+          Please login to view and join groups.
+        </p>
+      </div>
+    );
+  }
   if (loading) {
     return (
       <div className="p-6 flex flex-col items-center justify-center h-64">

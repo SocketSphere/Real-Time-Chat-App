@@ -43,7 +43,7 @@ const Contact = () => {
     try {
       await axios.post("http://localhost:5000/api/contacts/add", { userId, friendId });
       // Refresh contact list after adding
-      
+
       fetchMyContacts();
       alert("Contact added successfully!");
     } catch (err) {
@@ -60,22 +60,25 @@ const Contact = () => {
   }, [myContacts]);
 
   // Show login prompt if user not logged in
-  if (!isLogin) {
-    return (
-      <div className="p-6 text-center">
-        <p className="text-gray-600 text-lg">
-          Please login to view your contacts and recommendations.
-        </p>
-        <Link
-          to="/login"
-          className="mt-4 inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
-        >
-          Go to Login
-        </Link>
-      </div>
-    );
-  }
+ // Show login prompt if user not logged in
+    if (!isLogin) {
+      return (
+        <div className="p-6 flex flex-col items-center justify-center h-64">
+          <User className="w-10 h-10 animate-spin text-orange-500 mb-4" />
+          <p className="text-gray-600 text-lg text-center">
+            Please login to view your contacts and recommendations.
+          </p>
+          <Link
+            to="/login"
+            className="mt-4 inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+          >
+            Go to Login
+          </Link>
+        </div>
+      );
+    }
 
+ 
   return (
     <div className="p-6">
       {/* My Contacts */}
