@@ -13,6 +13,8 @@ import subscriptionRoutes from "./routes/subscriptionRoutes.js";
 import searchRoutes from "./routes/searchRoutes.js"
 import contactRoutes from "./routes/contactRoutes.js";
 import calendarRoutes from "./routes/calendarRoutes.js";
+import fileRoutes from "./routes/fileRoutes.js";
+
 dotenv.config();
 
 const app = express();
@@ -20,6 +22,12 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
+// Add this to your middleware section
+app.use("/uploads", express.static("uploads"));
+
+// Add this to your routes section
+app.use("/api/files", fileRoutes);
+
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/groups", groupRoutes);
