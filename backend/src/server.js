@@ -12,7 +12,7 @@ import planRoutes from "./routes/planRoutes.js";
 import subscriptionRoutes from "./routes/subscriptionRoutes.js";
 import searchRoutes from "./routes/searchRoutes.js"
 import contactRoutes from "./routes/contactRoutes.js";
-
+import calendarRoutes from "./routes/calendarRoutes.js";
 dotenv.config();
 
 const app = express();
@@ -28,6 +28,7 @@ app.use("/api/messages", messageRoutes);
 app.use("/api/plans", planRoutes);
 app.use("/api/search", searchRoutes);
 app.use("/api/subscriptions", subscriptionRoutes);
+app.use("/api/calendar", calendarRoutes);
 
 const PORT=process.env.PORT || 5000
 
@@ -37,5 +38,3 @@ connectDB().then(() => {
   });
 })
   .catch(err => console.log(err));
-
-

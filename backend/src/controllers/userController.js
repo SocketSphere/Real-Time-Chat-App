@@ -19,7 +19,7 @@ export const updateProfile = async (req, res) => {
 
     const updateData = { firstName, lastName, loginId, bio };
 
-    console.log("Uploaded file:", req.file); // Debug file
+    // console.log("Uploaded file:", req.file); // Debug file
 
     if (req.file) {
       try {

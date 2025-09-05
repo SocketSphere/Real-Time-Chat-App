@@ -14,9 +14,15 @@ export default defineConfig({
     },
   },
   server: {
-  port: 5176,
-  host: "127.0.0.1",
-  strictPort: true,
-}
-
+    port: 5176,
+    host: "127.0.0.1",
+    strictPort: true,
+    proxy: {
+      "/api": {
+        target: "http://localhost:5000", // backend server port
+        changeOrigin: true,
+        secure: false,
+      },
+    },
+  },
 })
