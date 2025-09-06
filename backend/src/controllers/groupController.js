@@ -51,3 +51,41 @@ export const getGroups = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+
+export const deleteGroups =async(req,res)=>{
+  try{
+    const {groupId,userId}=req.body
+    const group=await Group.findById(groupId)
+    if(!group) return res.status(404).json({msg:"Group not found"})
+    // await group.findByIdAndDelete(groupId);
+    await group.deleteOne();
+    res.status(200).json({msg:"Group deleted successfully"})  
+  }
+  catch(err){
+    res.status(500).json({error:err.message})
+  }
+}
+
+
+export const leaveGroup = async (req, res) => {
+  try {
+    const { groupId, userId } = req.body;
+    const group = await Group.findById(groupId);
+
+    if (!group) return res.status(404).json({ msg: "Group not found" });
+
+    // If the user is the owner, they cannot just leave (maybe delete instead)
+    if (group.owner.toString() === userId) {
+      return res.status(400).json({ msg: "Owner cannot leave their own group. Delete it instead." });
+    }
+
+    // Remove user from members
+    group.members = group.members.filter((m) => m.toString() !== userId);
+    await group.save();
+
+    res.status(200).json({ msg: "Left group successfully", group });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

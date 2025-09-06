@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Users, Plus, Loader, LogIn } from "lucide-react";
+import { Users, Plus, Loader, LogIn, Trash2 } from "lucide-react";
 import axios from "axios";
 import { useSelector } from "react-redux";
 
@@ -100,6 +100,58 @@ const Group = () => {
     }
   };
 
+  // Delete a group (only for owners)
+  const handleDeleteGroup = async (groupId) => {
+    if (!isLogin || !userId) {
+      setError("Please login to delete groups");
+      clearMessages();
+      return;
+    }
+    
+    if (!window.confirm("Are you sure you want to delete this group? This action cannot be undone.")) {
+      return;
+    }
+    
+    try {
+      await axios.delete(`http://localhost:5000/api/groups/delete`, {
+        data: { groupId, userId },
+      });
+      
+      // Remove the group from both lists
+      setGroups((prev) => prev.filter((g) => g._id !== groupId));
+      setJoinedGroups((prev) => prev.filter((g) => g._id !== groupId));
+      
+      setSuccess("Group deleted successfully");
+      clearMessages();
+      
+      // Trigger a custom event to refresh the groups list
+      window.dispatchEvent(new Event("groupUpdated"));
+    } catch (err) {
+      console.error(err);
+      setError(err.response?.data?.error || "Failed to delete group");
+      clearMessages();
+    }
+  };
+
+  // Leave a group
+  const handleLeaveGroup = async (groupId) => {
+    try {
+      const res = await axios.post("http://localhost:5000/api/groups/leave", {
+        groupId,
+        userId,
+      });
+
+      setGroups((prev) => prev.map((g) => (g._id === res.data.group._id ? res.data.group : g)));
+      setJoinedGroups((prev) => prev.filter((g) => g._id !== groupId));
+      setSuccess("You left the group successfully");
+      clearMessages();
+    } catch (err) {
+      console.error(err);
+      setError(err.response?.data?.error || "Failed to leave group");
+      clearMessages();
+    }
+  };
+
   // Create a new group
   const handleCreateGroup = async () => {
     if (!isLogin || !userId) {
@@ -147,6 +199,12 @@ const Group = () => {
     // Return only first 3 groups
     return notJoined.slice(0, 3);
   };
+
+  // Check if user is the owner of a group
+  const isGroupOwner = (group) => {
+    return group.owner?._id === userId;
+  };
+
   if (!isLogin) {
     return (
       <div className="p-6 flex flex-col items-center justify-center h-64">
@@ -157,6 +215,7 @@ const Group = () => {
       </div>
     );
   }
+
   if (loading) {
     return (
       <div className="p-6 flex flex-col items-center justify-center h-64">
@@ -219,9 +278,30 @@ const Group = () => {
                 <p className="text-xs text-gray-400 mb-4">
                   {g.members?.length || 0} members • {g.owner?._id === userId ? "Owner" : "Member"}
                 </p>
-                <button className="w-full py-2 bg-gray-200 text-gray-700 text-sm rounded cursor-not-allowed font-medium">
-                  Joined
-                </button>
+                
+                {isGroupOwner(g) ? (
+                  // Show delete button for group owner
+                  <div className="flex gap-2">
+                    <button className="py-2 flex-1 px-4 bg-gray-200 text-gray-700 text-sm rounded cursor-not-allowed font-medium">
+                      Owner
+                    </button>
+                    <button 
+                      onClick={() => handleDeleteGroup(g._id)} 
+                      className="py-2 px-4 bg-red-500 hover:bg-red-600 text-white text-sm rounded font-medium flex items-center gap-1"
+                      title="Delete Group"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  // Show leave button for regular members
+                  <button 
+                    onClick={() => handleLeaveGroup(g._id)} 
+                    className="w-full py-2 px-4 bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm rounded font-medium"
+                  >
+                    Leave Group
+                  </button>
+                )}
               </div>
             </div>
           ))}
@@ -229,7 +309,7 @@ const Group = () => {
       )}
 
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-semibold">Recommended <span className="text-orange-500">Group</span> </h2>
+        <h2 className="text-2xl font-semibold">Recommended <span className="text-orange-500">Groups</span></h2>
         <span className="text-sm text-gray-500">
           Showing {getRecommendedGroups().length} of {groups.length - joinedGroups.length} available groups
         </span>
