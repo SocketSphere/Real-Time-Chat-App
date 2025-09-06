@@ -51,3 +51,25 @@ export const addContact = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+
+
+export const removeContact = async (req, res) => {
+  try {
+    const { userId, friendId } = req.body;
+    
+    const contact = await Contact.findOneAndDelete({
+      userId,
+      friendId,
+    });
+    
+    if (!contact) {
+      return res.status(404).json({ msg: "Contact not found" });
+    }
+    
+    // Add a success response
+    res.status(200).json({ msg: "Contact deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
