@@ -37,10 +37,10 @@ const utilityItems = [
   { title: "Files", url: "/files", icon: Folder },
 ]
 
-// Settings
-const settingsItems = [
-  { title: "Settings", url: "/settings", icon: Settings },
-]
+// // Settings
+// const settingsItems = [
+//   { title: "Settings", url: "/settings", icon: Settings },
+// ]
 
 export function AppSidebar() {
   const location = useLocation()
@@ -107,7 +107,7 @@ export function AppSidebar() {
         </SidebarGroup>
 
         {/* Settings section */}
-        <SidebarGroup>
+        {/* <SidebarGroup>
           <SidebarGroupLabel>Account</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -133,7 +133,7 @@ export function AppSidebar() {
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
-        </SidebarGroup>
+        </SidebarGroup> */}
       </SidebarContent>
     </Sidebar>
   )
