@@ -14,7 +14,12 @@ import searchRoutes from "./routes/searchRoutes.js"
 import contactRoutes from "./routes/contactRoutes.js";
 import calendarRoutes from "./routes/calendarRoutes.js";
 import fileRoutes from "./routes/fileRoutes.js";
-
+import appearanceRoutes from "./routes/appearanceRoutes.js";
+// import appearanceRoutes from "./routes/appearanceRoutes.js";
+import notificationsRoutes from "./routes/notificationsRoutes.js";
+import privacyRoutes from "./routes/privacyRoutes.js";
+import securityRoutes from "./routes/securityRoutes.js";
+import dataRoutes from "./routes/dataRoutes.js";
 dotenv.config();
 
 const app = express();
@@ -27,7 +32,13 @@ app.use("/uploads", express.static("uploads"));
 
 // Add this to your routes section
 app.use("/api/files", fileRoutes);
-
+// Add this with your other route imports
+app.use("/api/appearance", appearanceRoutes);
+// app.use("/api/appearance", appearanceRoutes);
+app.use("/api/notifications", notificationsRoutes);
+app.use("/api/privacy", privacyRoutes);
+app.use("/api/security", securityRoutes);
+app.use("/api/data", dataRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/groups", groupRoutes);

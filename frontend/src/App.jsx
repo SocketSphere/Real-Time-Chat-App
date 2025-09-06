@@ -16,7 +16,7 @@ import Profile from "@/components/(Profile)/Profile"
 import Login from "./components/(profile)/Login"
 import Notifications from "./components/AppSidebar/Notifications"
 import Price from "./components/(Navbar)/Price"
-import Setting from "./components/AppSidebar/Setting"
+import Setting from "./components/settings/Setting"
 import { Toaster } from "react-hot-toast";
 
 function App() {
@@ -36,6 +36,7 @@ function App() {
         <Route path="/price" element={<Price/>}/>
         <Route path="/about-us" element={<AboutUs/>}/>
         <Route path="/profile" element={<Profile/>}/>
+        <Route path="/settings" element={<Setting/>}/>
 
         <Route path="*" element={<NotFound/>}/>
 
@@ -48,7 +49,6 @@ function App() {
            <Route path="/contact" element={<Contact/>}/>
            <Route path="/group" element={<Group/>}/>
            <Route path="/contact" element={<Contact/>}/>
-           <Route path="/settings" element={<Setting/>}/>
            <Route path="/notifications" element={<Notifications/>}/>
         </Route>
        

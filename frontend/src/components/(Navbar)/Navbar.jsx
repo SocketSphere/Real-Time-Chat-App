@@ -168,15 +168,21 @@ const Navbar = () => {
               tabIndex="0"
               className="menu dropdown-content bg-gray-300 rounded-lg shadow-lg mt-3 w-52 p-2"
             >
-              <li>
+              {/* <li>
                 <Link to="/Profile" className="justify-between hover:bg-gray-100 rounded-md">
                   Profile <span className="badge badge-primary">New</span>
+                </Link>
+              </li> */}
+              <li>
+                <Link to="/settings" className="justify-between hover:bg-gray-100 rounded-md">
+                  settings 
+                  {/* <span className="badge badge-primary">upddate</span> */}
                 </Link>
               </li>
               <li>
                 <button
                   onClick={handleLogout}
-                  className="hover:bg-gray-100 rounded-md"
+                  className="hover:bg-gray-100 rounded-md text-red-500"
                 >
                   Logout
                 </button>

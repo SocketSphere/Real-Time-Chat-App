@@ -19,6 +19,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src"],
+  "include": ["src", "src/components/Settings/PrivacySettings.js"],
   "references": []
 }
