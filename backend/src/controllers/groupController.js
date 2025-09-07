@@ -89,3 +89,19 @@ export const leaveGroup = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+export const getGroupById = async (req, res) => {
+  try {
+    const group = await Group.findById(req.params.id)
+      .populate("owner", "username")
+      .populate("members", "username");
+
+    if (!group) {
+      return res.status(404).json({ error: "Group not found" });
+    }
+
+    res.json(group);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

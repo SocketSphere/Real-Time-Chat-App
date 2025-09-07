@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Users, Plus, Loader, LogIn, Trash2 } from "lucide-react";
 import axios from "axios";
 import { useSelector } from "react-redux";
-
+import { useNavigate } from "react-router-dom";
 const Group = () => {
   const [groups, setGroups] = useState([]);
   const [joinedGroups, setJoinedGroups] = useState([]);
@@ -14,7 +14,7 @@ const Group = () => {
   const [success, setSuccess] = useState("");
   const { user, isLogin } = useSelector((state) => state.auth);
   const userId = user?._id || user?.id;
-
+  const navigate = useNavigate();
   // Clear messages after a delay
   const clearMessages = () => {
     setTimeout(() => {
@@ -295,12 +295,22 @@ const Group = () => {
                   </div>
                 ) : (
                   // Show leave button for regular members
-                  <button 
-                    onClick={() => handleLeaveGroup(g._id)} 
-                    className="w-full py-2 px-4 bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm rounded font-medium"
-                  >
-                    Leave Group
-                  </button>
+                  <div className="flex justify-between gap-4">
+                     <button 
+                      onClick={() => handleLeaveGroup(g._id)} 
+                      className="w-1/2 py-2 px-4 bg-gray-200 hover:bg-red-600 hover:text-white text-gray-700 text-sm rounded font-medium"
+                    >
+                      Leave Group
+                    </button>
+
+                    <button
+                      onClick={() => navigate(`/group/${g._id}`)} //  Go to group page
+                      className="py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded font-medium flex items-center gap-1"
+                    >
+                      <Users className="w-4 h-4" /> {/* ✅ Group icon */}
+                    </button>
+                  </div>
+                 
                 )}
               </div>
             </div>

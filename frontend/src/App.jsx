@@ -19,6 +19,7 @@ import Price from "./components/(Navbar)/Price"
 import Setting from "./components/settings/Setting"
 import { Toaster } from "react-hot-toast";
 import ChatPage from "./components/ChatPage"
+import GroupChatPage from "./components/GroupChatPage"
 function App() {
 
   return (
@@ -48,6 +49,7 @@ function App() {
            <Route path="/search" element={<Search/>}/>
            <Route path="/contact" element={<Contact/>}/>
             <Route path="/chat/:friendId" element={<ChatPage />} />
+           <Route path="/group/:groupId" element={<GroupChatPage />} />
            <Route path="/group" element={<Group/>}/>
            <Route path="/contact" element={<Contact/>}/>
            <Route path="/notifications" element={<Notifications/>}/>

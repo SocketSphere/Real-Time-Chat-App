@@ -30,7 +30,7 @@ const ChatPage = () => {
   // Fetch chat messages
   const fetchMessages = useCallback(async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/messages/recieve`, {
+      const res = await axios.get(`http://localhost:5000/api/messages`, {
         params: { userId: userId, senderId: friendId },
       });
       setMessages(res.data);
@@ -51,7 +51,7 @@ const ChatPage = () => {
     if (!message.trim()) return;
 
     try {
-      await axios.post(`http://localhost:5000/api/messages/send`, {
+      await axios.post(`http://localhost:5000/api/messages`, {
         sender: userId, // backend expects "sender"
         receiver: friendId, // backend expects "receiver"
         content: message, // backend expects "content"
