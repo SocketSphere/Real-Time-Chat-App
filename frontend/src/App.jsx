@@ -18,7 +18,7 @@ import Notifications from "./components/AppSidebar/Notifications"
 import Price from "./components/(Navbar)/Price"
 import Setting from "./components/settings/Setting"
 import { Toaster } from "react-hot-toast";
-
+import ChatPage from "./components/ChatPage"
 function App() {
 
   return (
@@ -37,7 +37,7 @@ function App() {
         <Route path="/about-us" element={<AboutUs/>}/>
         <Route path="/profile" element={<Profile/>}/>
         <Route path="/settings" element={<Setting/>}/>
-
+        
         <Route path="*" element={<NotFound/>}/>
 
 
@@ -47,6 +47,7 @@ function App() {
            <Route path="/files" element={<Files/>}/>
            <Route path="/search" element={<Search/>}/>
            <Route path="/contact" element={<Contact/>}/>
+            <Route path="/chat/:friendId" element={<ChatPage />} />
            <Route path="/group" element={<Group/>}/>
            <Route path="/contact" element={<Contact/>}/>
            <Route path="/notifications" element={<Notifications/>}/>

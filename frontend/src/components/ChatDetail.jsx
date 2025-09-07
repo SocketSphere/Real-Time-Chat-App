@@ -1,6 +1,5 @@
-// import Navbar from "../components/Navbar"
-// import Hero from "../components/Hero"
-import Footer from "../components/(HomePage)/Footer"
+
+// import Footer from "../components/(HomePage)/Footer"
 import { SidebarProvider } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
 

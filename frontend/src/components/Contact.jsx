@@ -1,14 +1,16 @@
-import { User, Phone, Video, MoreVertical, Trash2 } from "lucide-react";
+import { User, Phone, Video, MessageCircleCode, Trash2 } from "lucide-react";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Contact = () => {
   const { user, isLogin } = useSelector((state) => state.auth);
   const userId = user?._id || user?.id;
   const [myContacts, setMyContacts] = useState([]);
   const [recommended, setRecommended] = useState([]);
+  const navigate = useNavigate();
 
   // Fetch My Contacts
   const fetchMyContacts = async () => {
@@ -138,6 +140,12 @@ const Contact = () => {
                   className="text-red-500 hover:text-red-700"
                 >
                   <Trash2 />
+                </button>
+                <button
+                  onClick={() => navigate(`/chat/${c.friendId}`)} 
+                  className="text-blue-500 hover:text-blue-700"
+                >
+                  <MessageCircleCode />
                 </button>
               </div>
             </div>
