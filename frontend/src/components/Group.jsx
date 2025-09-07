@@ -292,6 +292,12 @@ const Group = () => {
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
+                    <button
+                      onClick={() => navigate(`/group/${g._id}`)} //  Go to group page
+                      className="py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded font-medium flex items-center gap-1"
+                    >
+                      <Users className="w-4 h-4" /> {/* ✅ Group icon */}
+                    </button>
                   </div>
                 ) : (
                   // Show leave button for regular members
