@@ -1,18 +1,32 @@
+// backend/routes/notificationRoutes.js
 import express from "express";
 import {
-  getNotificationSettings,
-  updateNotificationSettings
+  getNotifications,
+  getUnreadCount,
+  markAsRead,
+  markAllAsRead,
+  deleteNotification,
+  clearAllNotifications
 } from "../controllers/notificationsController.js";
 
 const router = express.Router();
 
-// Middleware to verify authentication
-const authenticate = (req, res, next) => {
-  // Add your authentication logic here
-  next();
-};
+// Get all notifications for a user
+router.get("/:userId", getNotifications);
 
-router.get("/:userId", authenticate, getNotificationSettings);
-router.put("/:userId", authenticate, updateNotificationSettings);
+// Get unread notification count
+router.get("/:userId/unread", getUnreadCount);
+
+// Mark a notification as read
+router.put("/:userId/read", markAsRead);
+
+// Mark all notifications as read
+router.put("/:userId/read-all", markAllAsRead);
+
+// Delete a notification
+router.delete("/:notificationId", deleteNotification);
+
+// Clear all notifications for a user
+router.delete("/:userId/clear", clearAllNotifications);
 
 export default router;

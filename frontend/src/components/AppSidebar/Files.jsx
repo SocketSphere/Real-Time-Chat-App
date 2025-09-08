@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
+import toast from 'react-hot-toast';
 
 const Files = () => {
   const [files, setFiles] = useState([]);
@@ -54,7 +55,7 @@ const Files = () => {
       setShowUploadModal(false);
     } catch (err) {
       console.error('Upload failed:', err);
-      alert('Failed to upload file');
+      toast.error('Failed to upload file');
     } finally {
       setUploading(false);
     }
@@ -73,7 +74,7 @@ const Files = () => {
       fetchFiles();
     } catch (err) {
       console.error('Failed to create folder:', err);
-      alert('Failed to create folder');
+      toast.error('Failed to create folder');
     }
   };
 
@@ -93,7 +94,7 @@ const Files = () => {
       link.remove();
     } catch (err) {
       console.error('Download failed:', err);
-      alert('Failed to download file');
+      toast.error('Failed to download file');
     }
   };
 
@@ -106,7 +107,7 @@ const Files = () => {
       fetchFiles();
     } catch (err) {
       console.error('Delete failed:', err);
-      alert('Failed to delete item');
+      toast.error('Failed to delete item');
     }
   };
 
@@ -221,7 +222,7 @@ const Files = () => {
               placeholder="Search files and folders..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              className="w-full bg-white border-x-orange-600  pl-12 pr-4 py-3 border border-y-green-500 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
             />
           </div>
 
@@ -363,7 +364,7 @@ const Files = () => {
                   type="file"
                   onChange={handleFileUpload}
                   disabled={uploading}
-                  className="hidden"
+                  className="hidden bg-white border-x-orange-600 "
                   id="file-upload"
                 />
                 <label

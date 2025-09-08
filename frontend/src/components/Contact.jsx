@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-
+import toast from "react-hot-toast";
 const Contact = () => {
   const { user, isLogin } = useSelector((state) => state.auth);
   const userId = user?._id || user?.id;
@@ -47,7 +47,7 @@ const Contact = () => {
       // Update the state to remove the deleted contact
       setMyContacts(prev => prev.filter(contact => contact.friendId !== friendId));
       
-      alert("Contact deleted successfully!");
+      toast.success("Contact deleted successfully!");
     } catch (err) {
       alert(err.response?.data?.msg || "Failed to delete contact");
     }
@@ -59,9 +59,9 @@ const Contact = () => {
       await axios.post("http://localhost:5000/api/contacts/add", { userId, friendId });
       // Refresh contact list after adding
       fetchMyContacts();
-      alert("Contact added successfully!");
+      toast.success("Contact added successfully!");
     } catch (err) {
-      alert(err.response?.data?.msg || "Failed to add contact");
+      toast.error(err.response?.data?.msg || "Failed to add contact");
     }
   };
 

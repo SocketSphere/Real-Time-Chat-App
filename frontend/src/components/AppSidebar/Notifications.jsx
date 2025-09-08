@@ -18,84 +18,85 @@ const Notifications = () => {
   
   const { user, isLogin } = useSelector((state) => state.auth);
   const userId = user?._id;
+  // src/components/Notifications.jsx
 
-  // Fetch notifications
-  const fetchNotifications = async () => {
-    if (!isLogin || !userId) return;
+// Update the fetchNotifications function
+const fetchNotifications = async () => {
+  if (!isLogin || !userId) return;
+  
+  try {
+    const [notifsRes, countRes] = await Promise.all([
+      axios.get(`http://localhost:5000/api/notifications/${userId}`),
+      axios.get(`http://localhost:5000/api/notifications/${userId}/unread`)
+    ]);
     
-    try {
-      const [notifsRes, countRes] = await Promise.all([
-        axios.get(`http://localhost:5000/api/notifications/${userId}`),
-        axios.get(`http://localhost:5000/api/notifications/${userId}/unread`)
-      ]);
-      
-      setNotifications(notifsRes.data);
-      setUnreadCount(countRes.data.count);
-    } catch (err) {
-      console.error("Error fetching notifications:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+    setNotifications(notifsRes.data);
+    setUnreadCount(countRes.data.count);
+  } catch (err) {
+    console.error("Error fetching notifications:", err);
+  } finally {
+    setLoading(false);
+  }
+};
 
-  // Mark notification as read
-  const markAsRead = async (notificationId) => {
-    try {
-      await axios.put(`http://localhost:5000/api/notifications/${userId}/read`, {
-        notificationId
-      });
-      
-      // Update local state
-      setNotifications(prev => prev.map(notif => 
-        notif._id === notificationId ? { ...notif, isRead: true } : notif
-      ));
+// Update the markAsRead function
+const markAsRead = async (notificationId) => {
+  try {
+    await axios.put(`http://localhost:5000/api/notifications/${userId}/read`, {
+      notificationId
+    });
+    
+    // Update local state
+    setNotifications(prev => prev.map(notif => 
+      notif._id === notificationId ? { ...notif, isRead: true } : notif
+    ));
+    setUnreadCount(prev => Math.max(0, prev - 1));
+  } catch (err) {
+    console.error("Error marking notification as read:", err);
+  }
+};
+
+// Update the markAllAsRead function
+const markAllAsRead = async () => {
+  try {
+    await axios.put(`http://localhost:5000/api/notifications/${userId}/read-all`);
+    
+    setNotifications(prev => prev.map(notif => ({ ...notif, isRead: true })));
+    setUnreadCount(0);
+  } catch (err) {
+    console.error("Error marking all as read:", err);
+  }
+};
+
+// Update the deleteNotification function
+const deleteNotification = async (notificationId) => {
+  try {
+    await axios.delete(`http://localhost:5000/api/notifications/${notificationId}`, {
+      data: { userId }
+    });
+    
+    setNotifications(prev => prev.filter(notif => notif._id !== notificationId));
+    // Update unread count if notification was unread
+    const deletedNotif = notifications.find(notif => notif._id === notificationId);
+    if (deletedNotif && !deletedNotif.isRead) {
       setUnreadCount(prev => Math.max(0, prev - 1));
-    } catch (err) {
-      console.error("Error marking notification as read:", err);
     }
-  };
+  } catch (err) {
+    console.error("Error deleting notification:", err);
+  }
+};
 
-  // Mark all as read
-  const markAllAsRead = async () => {
-    try {
-      await axios.put(`http://localhost:5000/api/notifications/${userId}/read`);
-      
-      setNotifications(prev => prev.map(notif => ({ ...notif, isRead: true })));
-      setUnreadCount(0);
-    } catch (err) {
-      console.error("Error marking all as read:", err);
-    }
-  };
-
-  // Delete notification
-  const deleteNotification = async (notificationId) => {
-    try {
-      await axios.delete(`http://localhost:5000/api/notifications/${notificationId}`, {
-        data: { userId }
-      });
-      
-      setNotifications(prev => prev.filter(notif => notif._id !== notificationId));
-      // Update unread count if notification was unread
-      const deletedNotif = notifications.find(notif => notif._id === notificationId);
-      if (deletedNotif && !deletedNotif.isRead) {
-        setUnreadCount(prev => Math.max(0, prev - 1));
-      }
-    } catch (err) {
-      console.error("Error deleting notification:", err);
-    }
-  };
-
-  // Clear all notifications
-  const clearAllNotifications = async () => {
-    try {
-      await axios.delete(`http://localhost:5000/api/notifications/${userId}/clear`);
-      
-      setNotifications([]);
-      setUnreadCount(0);
-    } catch (err) {
-      console.error("Error clearing notifications:", err);
-    }
-  };
+// Update the clearAllNotifications function
+const clearAllNotifications = async () => {
+  try {
+    await axios.delete(`http://localhost:5000/api/notifications/${userId}/clear`);
+    
+    setNotifications([]);
+    setUnreadCount(0);
+  } catch (err) {
+    console.error("Error clearing notifications:", err);
+  }
+};
 
   useEffect(() => {
     if (isLogin && userId) {

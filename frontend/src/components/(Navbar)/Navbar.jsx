@@ -125,7 +125,7 @@ const Navbar = () => {
         </div>
 
         {/* Notifications */}
-        <button className="btn btn-ghost btn-circle relative">
+        <Link to="/notifications" className="btn btn-ghost btn-circle relative">
           <div className="indicator">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -150,7 +150,7 @@ const Navbar = () => {
             </svg>
             <span className="badge badge-xs badge-primary indicator-item"></span>
           </div>
-        </button>
+        </Link>
 
         {/* Profile or Signup */}
         {isLogin ? (

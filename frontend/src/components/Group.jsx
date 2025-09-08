@@ -3,6 +3,8 @@ import { Users, Plus, Loader, LogIn, Trash2 } from "lucide-react";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+// import toast from "react-hot-toast";
+
 const Group = () => {
   const [groups, setGroups] = useState([]);
   const [joinedGroups, setJoinedGroups] = useState([]);

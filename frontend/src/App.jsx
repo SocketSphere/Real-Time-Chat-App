@@ -7,7 +7,7 @@ import Group from "./components/Group"
 import Home from "./pages/Home"
 import DashboardLayout from "@/Layouts/DashBoardLayout"
 import AboutUs from "@/components/(Navbar)/AboutUs"
-import Inbox from "@/components/AppSidebar/Inbox"
+// import Inbox from "@/components/AppSidebar/Inbox"
 import Calendar from "./components/AppSidebar/Calendar"
 import Search  from "./components/AppSidebar/Search"
 import Files from "./components/AppSidebar/Files"
@@ -43,7 +43,7 @@ function App() {
 
 
         <Route element={<DashboardLayout/>}>
-           <Route path="/inbox" element={<Inbox/>}/>
+           {/* <Route path="/inbox" element={<Inbox/>}/> */}
            <Route path="/calendar" element={<Calendar/>}/>
            <Route path="/files" element={<Files/>}/>
            <Route path="/search" element={<Search/>}/>

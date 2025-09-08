@@ -1,6 +1,6 @@
 // src/components/ChatPage.jsx
 import { useParams, useNavigate } from "react-router-dom";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect,useRef, useState, useCallback } from "react";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { Phone, Video, Trash2 } from "lucide-react";
@@ -8,7 +8,7 @@ import { Phone, Video, Trash2 } from "lucide-react";
 const ChatPage = () => {
   const { friendId } = useParams(); // dynamic id from URL
   const navigate = useNavigate();
-
+  const chatBoxRef = useRef(null);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]); // ✅ FIX: define messages state
   const [friend, setFriend] = useState(null);
@@ -63,7 +63,11 @@ const ChatPage = () => {
       console.log(err);
     }
   };
-
+  useEffect(() => {
+    if (chatBoxRef.current) {
+      chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
+    }
+  }, [messages]);
   // Delete contact
   const handleDeleteContact = async () => {
     try {
@@ -103,12 +107,13 @@ const ChatPage = () => {
       </div>
 
       {/* Chat Box */}
-      <div className="border rounded-lg p-4 h-96 overflow-y-auto bg-gray-100">
+      <div ref={chatBoxRef} className="border rounded-lg p-4 h-96 overflow-y-auto bg-gray-100">
         {messages.length === 0 ? (
           <p className="text-gray-500">No messages yet...</p>
         ) : (
           messages.map((m) => (
             <div
+              
               key={m._id}
               className={`mb-2 p-2 rounded-lg max-w-xs ${
                 m.sender._id === userId
@@ -135,7 +140,7 @@ const ChatPage = () => {
           placeholder="Type a message..."
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          className="flex-1 border rounded-l-lg px-4 py-2"
+          className="flex-1 border bg-gray-200 rounded-l-lg px-4 py-2"
         />
         <button
           onClick={handleSendMessage}

@@ -1,10 +1,7 @@
 import { useLocation, NavLink } from "react-router-dom"
 import {
   Calendar,
-  Home,
-  Inbox,
   Search,
-  Settings,
   Users,
   User,
   Bell,
@@ -24,9 +21,8 @@ import {
 
 // Main navigation items
 const mainItems = [
-  { title: "Inbox", url: "/inbox", icon: Inbox },
-  { title: "Groups", url: "/group", icon: Users },
   { title: "Contacts", url: "/contact", icon: User },
+  { title: "Groups", url: "/group", icon: Users },
   { title: "Search", url: "/search", icon: Search },
 ]
 
@@ -36,11 +32,6 @@ const utilityItems = [
   { title: "Notifications", url: "/notifications", icon: Bell },
   { title: "Files", url: "/files", icon: Folder },
 ]
-
-// // Settings
-// const settingsItems = [
-//   { title: "Settings", url: "/settings", icon: Settings },
-// ]
 
 export function AppSidebar() {
   const location = useLocation()

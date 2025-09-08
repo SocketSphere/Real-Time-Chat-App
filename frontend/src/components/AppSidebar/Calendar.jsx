@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import axios from "axios";
 import { useSelector } from "react-redux";
-
+import toast from "react-hot-toast";
 const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -194,7 +194,7 @@ const Calendar = () => {
         location: "",
         color: "#3b82f6",
       });
-      alert(editingEventId ? "Event updated successfully!" : "Event created successfully!");
+      toast(editingEventId ? "Event updated successfully!" : "Event created successfully!");
     } catch (err) {
       alert(err.message);
     }
@@ -439,7 +439,7 @@ const Calendar = () => {
                     required
                     value={newEvent.title}
                     onChange={(e) => setNewEvent({...newEvent, title: e.target.value})}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1"
+                    className="w-full border bg-white border-x-orange-600 rounded-md px-3 py-2 mt-1"
                     placeholder="Event title"
                   />
                 </div>
@@ -450,7 +450,7 @@ const Calendar = () => {
                   <textarea
                     value={newEvent.description}
                     onChange={(e) => setNewEvent({...newEvent, description: e.target.value})}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1"
+                    className="w-full border bg-white border-x-orange-600  border-gray-300 rounded-md px-3 py-2 mt-1"
                     rows={3}
                     placeholder="Event description"
                   />
@@ -465,7 +465,7 @@ const Calendar = () => {
                       required
                       value={newEvent.start}
                       onChange={(e) => setNewEvent({...newEvent, start: e.target.value})}
-                      className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1"
+                      className="w-full border bg-white border-y-orange-600  border-gray-300 rounded-md px-3 py-2 mt-1"
                     />
                   </div>
                   <div>
@@ -477,7 +477,7 @@ const Calendar = () => {
                       required
                       value={newEvent.end}
                       onChange={(e) => setNewEvent({...newEvent, end: e.target.value})}
-                      className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1"
+                      className="w-full border bg-white border-y-orange-600  border-gray-300 rounded-md px-3 py-2 mt-1"
                     />
                   </div>
                 </div>
@@ -488,7 +488,7 @@ const Calendar = () => {
                   <select
                     value={newEvent.type}
                     onChange={(e) => setNewEvent({...newEvent, type: e.target.value})}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1"
+                    className="w-full border bg-white border-x-orange-600  border-gray-300 rounded-md px-3 py-2 mt-1"
                   >
                     <option value="meeting">Meeting</option>
                     <option value="video">Video Call</option>
@@ -504,7 +504,7 @@ const Calendar = () => {
                     type="text"
                     value={newEvent.location}
                     onChange={(e) => setNewEvent({...newEvent, location: e.target.value})}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1"
+                    className="w-full border bg-white border-y-orange-600  border-gray-300 rounded-md px-3 py-2 mt-1"
                     placeholder="Meeting location"
                   />
                 </div>
