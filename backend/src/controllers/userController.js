@@ -23,17 +23,27 @@ export const updateProfile = async (req, res) => {
 
     if (req.file) {
       try {
-        // Upload avatar to Cloudinary
-        const result = await cloudinary.uploader.upload(req.file.path, {
-          folder: "avatars",
-          transformation: [{ width: 300, height: 300, crop: "fill" }],
-        });
+        const streamUpload = (fileBuffer) => {
+          return new Promise((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream(
+              { folder: "avatars", transformation: [{ width: 300, height: 300, crop: "fill" }] },
+              (error, result) => {
+                if (result) resolve(result);
+                else reject(error);
+              }
+            );
+            stream.end(fileBuffer);
+          });
+        };
+
+        const result = await streamUpload(req.file.buffer);
         updateData.profileImage = result.secure_url;
       } catch (uploadError) {
         console.error("Cloudinary upload error:", uploadError);
         return res.status(500).json({ error: "Failed to upload image" });
       }
     }
+
 
     const user = await User.findByIdAndUpdate(
       req.params.id, 
