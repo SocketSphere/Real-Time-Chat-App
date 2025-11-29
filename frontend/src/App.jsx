@@ -20,8 +20,12 @@ import Setting from "./components/settings/Setting"
 import { Toaster } from "react-hot-toast";
 import ChatPage from "./components/ChatPage"
 import GroupChatPage from "./components/GroupChatPage"
-function App() {
+import useNotificationCount from './hooks/useNotificationCount';
+import useWebSocket from './hooks/useWebSocket';
 
+function App() {
+  useNotificationCount();
+  useWebSocket();
   return (
    <div>
     <Toaster

@@ -1,7 +1,7 @@
 
 // import Footer from "../components/(HomePage)/Footer"
 import { SidebarProvider } from "@/components/ui/sidebar"
-import { AppSidebar } from "@/components/app-sidebar"
+import { AppSidebar } from "@/components/appSidebar.jsx"
 
 const Home = () => {
   return (

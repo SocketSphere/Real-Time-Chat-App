@@ -10,13 +10,13 @@ const Price = () => {
   const plans = [
     {
       name: "Free",
-      price: { monthly: "$0", yearly: "$0" },
+      price: { monthly: "Br 0", yearly: "Br 0" },
       features: ["Basic messaging", "1 group chat", "Limited file sharing"],
       popular: false,
     },
     {
       name: "Advanced",
-      price: { monthly: "$9", yearly: "$90" },
+      price: { monthly: "Br 10", yearly: "Br 100" },
       features: [
         "Unlimited messaging",
         "Unlimited groups",
@@ -27,7 +27,7 @@ const Price = () => {
     },
     {
       name: "Pro",
-      price: { monthly: "$19", yearly: "$190" },
+      price: { monthly: "Br 20", yearly: "Br 180" },
       features: [
         "Everything in Advanced",
         "Custom themes",

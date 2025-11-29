@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
 import { 
   Bell, 
@@ -10,94 +10,105 @@ import {
   Trash2,
   Check
 } from 'lucide-react';
+import { setNotificationCount, decrementNotificationCount } from '../../redux/notificationSlice.js'; // Removed incrementNotificationCount
 
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
-  const [unreadCount, setUnreadCount] = useState(0);
+  const [unreadCount, setUnreadCount] = useState(0); // Added unreadCount state
   const [loading, setLoading] = useState(true);
   
   const { user, isLogin } = useSelector((state) => state.auth);
   const userId = user?._id;
-  // src/components/Notifications.jsx
-
-// Update the fetchNotifications function
-const fetchNotifications = async () => {
-  if (!isLogin || !userId) return;
+  const dispatch = useDispatch();
   
-  try {
-    const [notifsRes, countRes] = await Promise.all([
-      axios.get(`http://localhost:5000/api/notifications/${userId}`),
-      axios.get(`http://localhost:5000/api/notifications/${userId}/unread`)
-    ]);
+  const fetchNotifications = async () => {
+    if (!isLogin || !userId) return;
     
-    setNotifications(notifsRes.data);
-    setUnreadCount(countRes.data.count);
-  } catch (err) {
-    console.error("Error fetching notifications:", err);
-  } finally {
-    setLoading(false);
-  }
-};
-
-// Update the markAsRead function
-const markAsRead = async (notificationId) => {
-  try {
-    await axios.put(`http://localhost:5000/api/notifications/${userId}/read`, {
-      notificationId
-    });
-    
-    // Update local state
-    setNotifications(prev => prev.map(notif => 
-      notif._id === notificationId ? { ...notif, isRead: true } : notif
-    ));
-    setUnreadCount(prev => Math.max(0, prev - 1));
-  } catch (err) {
-    console.error("Error marking notification as read:", err);
-  }
-};
-
-// Update the markAllAsRead function
-const markAllAsRead = async () => {
-  try {
-    await axios.put(`http://localhost:5000/api/notifications/${userId}/read-all`);
-    
-    setNotifications(prev => prev.map(notif => ({ ...notif, isRead: true })));
-    setUnreadCount(0);
-  } catch (err) {
-    console.error("Error marking all as read:", err);
-  }
-};
-
-// Update the deleteNotification function
-const deleteNotification = async (notificationId) => {
-  try {
-    await axios.delete(`http://localhost:5000/api/notifications/${notificationId}`, {
-      data: { userId }
-    });
-    
-    setNotifications(prev => prev.filter(notif => notif._id !== notificationId));
-    // Update unread count if notification was unread
-    const deletedNotif = notifications.find(notif => notif._id === notificationId);
-    if (deletedNotif && !deletedNotif.isRead) {
-      setUnreadCount(prev => Math.max(0, prev - 1));
+    try {
+      const [notifsRes, countRes] = await Promise.all([
+        axios.get(`http://localhost:5000/api/notifications/${userId}`),
+        axios.get(`http://localhost:5000/api/notifications/${userId}/unread`)
+      ]);
+      
+      setNotifications(notifsRes.data);
+      // Update both local state and Redux store with the count
+      const count = countRes.data.count;
+      setUnreadCount(count);
+      dispatch(setNotificationCount(count));
+    } catch (err) {
+      console.error("Error fetching notifications:", err);
+    } finally {
+      setLoading(false);
     }
-  } catch (err) {
-    console.error("Error deleting notification:", err);
-  }
-};
-
-// Update the clearAllNotifications function
-const clearAllNotifications = async () => {
-  try {
-    await axios.delete(`http://localhost:5000/api/notifications/${userId}/clear`);
-    
-    setNotifications([]);
-    setUnreadCount(0);
-  } catch (err) {
-    console.error("Error clearing notifications:", err);
-  }
-};
-
+  };
+  
+  const markAsRead = async (notificationId) => {
+    try {
+      await axios.put(`http://localhost:5000/api/notifications/${userId}/read`, {
+        notificationId
+      });
+      
+      // Update local state
+      setNotifications(prev => prev.map(notif => 
+        notif._id === notificationId ? { ...notif, isRead: true } : notif
+      ));
+      
+      // Update local unread count and Redux store
+      setUnreadCount(prev => Math.max(0, prev - 1));
+      dispatch(decrementNotificationCount());
+    } catch (err) {
+      console.error("Error marking notification as read:", err);
+    }
+  };
+  
+  const markAllAsRead = async () => {
+    try {
+      await axios.put(`http://localhost:5000/api/notifications/${userId}/read-all`);
+      
+      setNotifications(prev => prev.map(notif => ({ ...notif, isRead: true })));
+      // Set the count to 0 in both local state and Redux
+      setUnreadCount(0);
+      dispatch(setNotificationCount(0));
+    } catch (err) {
+      console.error("Error marking all as read:", err);
+    }
+  };
+  
+  const deleteNotification = async (notificationId) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/notifications/${notificationId}`, {
+        data: { userId }
+      });
+      
+      // Find the notification before deleting it
+      const deletedNotif = notifications.find(notif => notif._id === notificationId);
+      
+      setNotifications(prev => prev.filter(notif => notif._id !== notificationId));
+      
+      // If the notification was unread, update the count
+      if (deletedNotif && !deletedNotif.isRead) {
+        const newCount = Math.max(0, unreadCount - 1);
+        setUnreadCount(newCount);
+        dispatch(decrementNotificationCount());
+      }
+    } catch (err) {
+      console.error("Error deleting notification:", err);
+    }
+  };
+  
+  const clearAllNotifications = async () => {
+    try {
+      await axios.delete(`http://localhost:5000/api/notifications/${userId}/clear`);
+      
+      setNotifications([]);
+      // Set the count to 0 in both local state and Redux
+      setUnreadCount(0);
+      dispatch(setNotificationCount(0));
+    } catch (err) {
+      console.error("Error clearing notifications:", err);
+    }
+  };
+  
   useEffect(() => {
     if (isLogin && userId) {
       fetchNotifications();
@@ -107,7 +118,7 @@ const clearAllNotifications = async () => {
       return () => clearInterval(interval);
     }
   }, [isLogin, userId]);
-
+  
   const getNotificationIcon = (type) => {
     switch (type) {
       case 'message':
@@ -122,7 +133,7 @@ const clearAllNotifications = async () => {
         return <Bell className="w-5 h-5 text-gray-500" />;
     }
   };
-
+  
   const formatTime = (timestamp) => {
     const now = new Date();
     const time = new Date(timestamp);
@@ -133,7 +144,7 @@ const clearAllNotifications = async () => {
     if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
     return time.toLocaleDateString();
   };
-
+  
   if (!isLogin) {
     return (
       <div className="p-6 flex flex-col items-center justify-center h-64">
@@ -142,7 +153,7 @@ const clearAllNotifications = async () => {
       </div>
     );
   }
-
+  
   if (loading) {
     return (
       <div className="p-6 flex justify-center items-center h-64">
@@ -150,7 +161,7 @@ const clearAllNotifications = async () => {
       </div>
     );
   }
-
+  
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <div className="flex justify-between items-center mb-6">
@@ -176,7 +187,7 @@ const clearAllNotifications = async () => {
           )}
         </div>
       </div>
-
+      
       {notifications.length === 0 ? (
         <div className="text-center py-12 bg-gray-50 rounded-lg">
           <Bell className="w-12 h-12 text-gray-400 mx-auto mb-4" />
