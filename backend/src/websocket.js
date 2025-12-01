@@ -16,13 +16,13 @@ class WebSocketManager {
     this.wss = wss;
 
     wss.on('connection', (ws, req) => {
-      console.log('🔌 New WebSocket connection established');
-      console.log('📡 Client IP:', req.socket.remoteAddress);
+      // console.log('🔌 New WebSocket connection established');
+      // console.log('📡 Client IP:', req.socket.remoteAddress);
 
       ws.on('message', (message) => {
         try {
           const data = JSON.parse(message.toString());
-          console.log('📥 Received WebSocket message:', data.type);
+          // console.log('📥 Received WebSocket message:', data.type);
           this.handleMessage(ws, data);
         } catch (error) {
           console.error('❌ Error parsing WebSocket message:', error);
@@ -34,7 +34,7 @@ class WebSocketManager {
       });
 
       ws.on('close', () => {
-        console.log('❌ WebSocket connection closed');
+        // console.log('❌ WebSocket connection closed');
         this.removeClient(ws);
       });
 
@@ -50,18 +50,18 @@ class WebSocketManager {
       }));
     });
 
-    console.log('✅ WebSocket server initialized on path /ws');
+    // console.log('✅ WebSocket server initialized on path /ws');
   }
 
   handleMessage(ws, data) {
-    console.log(`📨 Handling message type: ${data.type}`);
+    // console.log(`📨 Handling message type: ${data.type}`);
     
     switch (data.type) {
       case 'auth':
         this.handleAuth(ws, data);
         break;
       case 'ping':
-        console.log('🏓 Received ping, sending pong');
+        // console.log('🏓 Received ping, sending pong');
         ws.send(JSON.stringify({ type: 'pong' }));
         break;
       case 'send_message':
@@ -71,11 +71,18 @@ class WebSocketManager {
         });
         this.handleSendMessage(data);
         break;
+      case 'send_group_message':
+        // console.log('📤 Processing send_group_message:', {
+        //   from: data.senderId,
+        //   toGroup: data.groupId
+        // });
+        this.handleGroupMessage(data);
+        break;
       case 'typing':
         this.handleTyping(data);
         break;
       default:
-        console.log('⚠️ Unhandled message type:', data.type);
+        // console.log('⚠️ Unhandled message type:', data.type);
     }
   }
 
@@ -93,8 +100,8 @@ class WebSocketManager {
     // Store the client connection with user ID
     this.clients.set(userId, ws);
     
-    console.log(`✅ User ${userId} authenticated via WebSocket`);
-    console.log(`👥 Total connected users: ${this.clients.size}`);
+    // console.log(`✅ User ${userId} authenticated via WebSocket`);
+    // console.log(`👥 Total connected users: ${this.clients.size}`);
     
     ws.send(JSON.stringify({ 
       type: 'auth_success', 
@@ -107,8 +114,8 @@ class WebSocketManager {
     for (const [userId, client] of this.clients.entries()) {
       if (client === ws) {
         this.clients.delete(userId);
-        console.log(`🗑️ Removed client ${userId}`);
-        console.log(`👥 Remaining connected users: ${this.clients.size}`);
+        // console.log(`🗑️ Removed client ${userId}`);
+        // console.log(`👥 Remaining connected users: ${this.clients.size}`);
         break;
       }
     }
@@ -116,40 +123,40 @@ class WebSocketManager {
 
   // 🔥 CRITICAL: Add this method for sending messages
   sendMessageToUser(userId, messageData) {
-    console.log(`📤 Attempting to send to user ${userId}`);
-    console.log(`👥 Connected clients:`, Array.from(this.clients.keys()));
+    // console.log(`📤 Attempting to send to user ${userId}`);
+    // console.log(`👥 Connected clients:`, Array.from(this.clients.keys()));
     
     const client = this.clients.get(userId);
     
     if (client) {
-      console.log(`✅ Found client for user ${userId}`);
-      console.log(`📊 Client readyState:`, client.readyState);
+      // console.log(`✅ Found client for user ${userId}`);
+      // console.log(`📊 Client readyState:`, client.readyState);
       
       if (client.readyState === 1) { // 1 = WebSocket.OPEN
         try {
           const jsonMessage = JSON.stringify(messageData);
-          console.log(`📨 Sending message type: ${messageData.type}`);
+          // console.log(`📨 Sending message type: ${messageData.type}`);
           client.send(jsonMessage);
-          console.log(`✅ Message sent to user ${userId}`);
+          // console.log(`✅ Message sent to user ${userId}`);
           return true;
         } catch (error) {
           console.error(`❌ Error sending to user ${userId}:`, error);
           return false;
         }
       } else {
-        console.log(`❌ Client for user ${userId} is not OPEN. State:`, client.readyState);
+        // console.log(`❌ Client for user ${userId} is not OPEN. State:`, client.readyState);
         return false;
       }
     } else {
-      console.log(`❌ User ${userId} not found in connected clients`);
-      console.log(`   Available users:`, Array.from(this.clients.keys()));
+      // console.log(`❌ User ${userId} not found in connected clients`);
+      // console.log(`   Available users:`, Array.from(this.clients.keys()));
       return false;
     }
   }
 
   // Also keep the sendNotification method for compatibility
   sendNotification(userId, notificationData) {
-    console.log(`📢 Sending notification to user ${userId}`);
+    // console.log(`📢 Sending notification to user ${userId}`);
     return this.sendMessageToUser(userId, {
       type: 'new_notification',
       data: notificationData
@@ -158,11 +165,11 @@ class WebSocketManager {
 
   // Handle direct send_message from WebSocket
   handleSendMessage(data) {
-    console.log('🔌 handleSendMessage called:', {
-      senderId: data.senderId,
-      receiverId: data.receiverId,
-      content: data.content
-    });
+    // console.log('🔌 handleSendMessage called:', {
+    //   senderId: data.senderId,
+    //   receiverId: data.receiverId,
+    //   content: data.content
+    // });
     
     const { senderId, receiverId, content, messageId, timestamp } = data;
     
@@ -170,7 +177,7 @@ class WebSocketManager {
     const receiverClient = this.clients.get(receiverId);
     
     if (receiverClient && receiverClient.readyState === 1) {
-      console.log('📤 Forwarding message to receiver:', receiverId);
+      // console.log('📤 Forwarding message to receiver:', receiverId);
       
       receiverClient.send(JSON.stringify({
         type: 'new_message',
@@ -184,7 +191,7 @@ class WebSocketManager {
         }
       }));
       
-      console.log('✅ Message forwarded via WebSocket');
+      // console.log('✅ Message forwarded via WebSocket');
       
       // Send confirmation to sender
       const senderClient = this.clients.get(senderId);
@@ -195,14 +202,14 @@ class WebSocketManager {
         }));
       }
     } else {
-      console.log(`❌ Receiver ${receiverId} not connected or not open`);
+      // console.log(`❌ Receiver ${receiverId} not connected or not open`);
     }
   }
 
   // Handle typing indicator
   handleTyping(data) {
     const { senderId, receiverId, isTyping } = data;
-    console.log(`⌨️ Typing: ${senderId} -> ${receiverId} (${isTyping})`);
+    // console.log(`⌨️ Typing: ${senderId} -> ${receiverId} (${isTyping})`);
     
     const receiverClient = this.clients.get(receiverId);
     if (receiverClient && receiverClient.readyState === 1) {
@@ -215,13 +222,43 @@ class WebSocketManager {
 
   // Method to broadcast to all clients
   broadcast(message, excludeUserId = null) {
-    console.log(`📢 Broadcasting to all clients (except ${excludeUserId})`);
+    // console.log(`📢 Broadcasting to all clients (except ${excludeUserId})`);
     for (const [userId, client] of this.clients.entries()) {
       if (userId !== excludeUserId && client.readyState === 1) {
         client.send(JSON.stringify(message));
       }
     }
   }
+
+  handleGroupMessage(data) {
+  // console.log('👥 Handling group message:', {
+  //   senderId: data.senderId,
+  //   groupId: data.groupId,
+  //   content: data.content
+  // });
+  
+  const { senderId, groupId, content, messageId, timestamp } = data;
+  
+  // In a real app, you would:
+  // 1. Get all group members from database
+  // 2. Send message to each member
+  
+  // For now, we'll just log it
+  // console.log(`Group ${groupId} message from ${senderId}: ${content}`);
+  
+  // You could also broadcast to a specific "group room" if implemented
+  // this.broadcastToGroup(groupId, {
+  //   type: 'new_message',
+  //   data: {
+  //     _id: messageId,
+  //     sender: { _id: senderId },
+  //     group: { _id: groupId },
+  //     content: content,
+  //     createdAt: timestamp || new Date().toISOString(),
+  //     status: 'delivered'
+  //   }
+  // }, senderId);
+}
 }
 
 // Create a singleton instance

@@ -392,7 +392,7 @@ const Group = () => {
                 placeholder="Enter group name"
                 value={newGroupName}
                 onChange={(e) => setNewGroupName(e.target.value)}
-                className="border border-gray-300 px-4 py-2 rounded-lg w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="border border-gray-300 px-4 py-2 bg-slate-50 rounded-lg w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 required
                 autoFocus
               />
@@ -406,7 +406,7 @@ const Group = () => {
                 placeholder="Describe the purpose of your group"
                 value={newGroupDescription}
                 onChange={(e) => setNewGroupDescription(e.target.value)}
-                className="border border-gray-300 px-4 py-2 rounded-lg w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="border border-gray-300 bg-slate-100 px-4 py-2 rounded-lg w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 rows={3}
               />
             </div>
