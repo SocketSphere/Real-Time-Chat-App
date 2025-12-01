@@ -1,16 +1,17 @@
 import Message from "../models/Message.js";
-
-// backend/controllers/messageController.js
 import { createNotification } from "./notificationsController.js";
-
-// backend/controllers/messageController.js
+import Group from "../models/Group.js"; // Add this import
 import webSocketManager from '../websocket.js';
 
+// Send a message - UPDATED WITH PROPER WEBSOCKET BROADCAST
 export const sendMessage = async (req, res) => {
   try {
     const { sender, receiver, group, content } = req.body;
     
-    // Validation (existing code...)
+    // Add detailed logging
+    console.log('📨 SEND MESSAGE REQUEST:', { sender, receiver, content });
+    
+    // Validation
     if (!sender || !content) {
       return res.status(400).json({ msg: "Sender and content are required" });
     }
@@ -18,7 +19,7 @@ export const sendMessage = async (req, res) => {
       return res.status(400).json({ msg: "Provide either receiver or group" });
     }
     
-    // Create message (existing code...)
+    // Create message
     const message = new Message({
       sender,
       content,
@@ -27,28 +28,75 @@ export const sendMessage = async (req, res) => {
     });
     await message.save();
     
-    // Populate message (existing code...)
+    console.log('✅ Message saved to DB:', message._id);
+    
+    // Populate message
     const populatedMessage = await Message.findById(message._id)
-      .populate("sender", "firstName lastName")
-      .populate("receiver", "firstName lastName")
+      .populate("sender", "firstName lastName _id")
+      .populate("receiver", "firstName lastName _id")
       .populate("group", "name");
     
-    // 🔥 NEW: Broadcast via WebSocket
+    console.log('📦 Populated message:', {
+      id: populatedMessage._id,
+      senderId: populatedMessage.sender?._id,
+      receiverId: populatedMessage.receiver?._id,
+      content: populatedMessage.content
+    });
+    
+    // 🔥 CRITICAL: Broadcast via WebSocket
     if (receiver) {
-      // For direct messages
-      webSocketManager.sendNotification(receiver, {
-        type: 'new_message',
-        data: populatedMessage.toObject()
+      console.log('🔌 Broadcasting to receiver:', receiver);
+      
+      // Convert to plain object for WebSocket
+      const messageData = {
+        _id: populatedMessage._id,
+        sender: {
+          _id: populatedMessage.sender._id,
+          firstName: populatedMessage.sender.firstName,
+          lastName: populatedMessage.sender.lastName
+        },
+        receiver: populatedMessage.receiver ? {
+          _id: populatedMessage.receiver._id,
+          firstName: populatedMessage.receiver.firstName,
+          lastName: populatedMessage.receiver.lastName
+        } : null,
+        content: populatedMessage.content,
+        createdAt: populatedMessage.createdAt,
+        status: 'delivered'
+      };
+      
+      console.log('📤 WebSocket payload:', {
+        receiverId: receiver,
+        messageType: 'new_message'
       });
       
-      // Alternatively, use a dedicated method:
-      webSocketManager.sendMessageToUser(receiver, {
+      // Send to receiver
+      const sentToReceiver = webSocketManager.sendMessageToUser(receiver, {
         type: 'new_message',
-        message: populatedMessage.toObject()
+        data: messageData
+      });
+      
+      console.log('📡 WebSocket send result to receiver:', sentToReceiver ? '✅ Success' : '❌ Failed');
+      
+      // Also send to sender (for delivery confirmation)
+      const sentToSender = webSocketManager.sendMessageToUser(sender, {
+        type: 'message_sent',
+        data: {
+          _id: message._id,
+          status: 'delivered'
+        }
+      });
+      
+      console.log('📡 WebSocket send result to sender:', sentToSender ? '✅ Success' : '❌ Failed');
+      
+      // Also try sendNotification method for compatibility
+      webSocketManager.sendNotification(receiver, {
+        type: 'new_message',
+        data: messageData
       });
     }
     
-    // Notifications (existing code...)
+    // Create notification for the receiver
     if (receiver) {
       await createNotification({
         recipient: receiver,
@@ -64,8 +112,37 @@ export const sendMessage = async (req, res) => {
       });
     }
     
+    // Create notifications for group members (group message)
+    if (group) {
+      // Get group details to get all members
+      const groupDetails = await Group.findById(group).populate("members", "_id");
+      const memberIds = groupDetails.members.map(m => m._id.toString());
+      
+      // Create notification for each member except the sender
+      for (const memberId of memberIds) {
+        if (memberId !== sender) {
+          await createNotification({
+            recipient: memberId,
+            sender: sender,
+            type: "group_message",
+            title: "New Group Message",
+            message: `New message in ${groupDetails.name}`,
+            metadata: {
+              groupName: groupDetails.name,
+              content: content.substring(0, 50) + (content.length > 50 ? "..." : "")
+            },
+            relatedId: message._id,
+            relatedModel: "Message"
+          });
+        }
+      }
+    }
+    
+    console.log('✅ Message processing complete');
     res.status(201).json(populatedMessage);
+    
   } catch (err) {
+    console.error('💥 sendMessage error:', err);
     res.status(500).json({ error: err.message });
   }
 };
@@ -88,8 +165,8 @@ export const getMessages = async (req, res) => {
     }
 
     const messages = await Message.find(filter)
-      .populate("sender", "username")
-      .populate("receiver", "username")
+      .populate("sender", "username firstName lastName _id")
+      .populate("receiver", "username firstName lastName _id")
       .populate("group", "name")
       .sort({ createdAt: 1 });
 
