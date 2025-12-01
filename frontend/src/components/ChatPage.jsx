@@ -1,4 +1,4 @@
-// frontend/src/components/ChatPage.jsx - USING useWebSocket HOOK
+// frontend/src/components/ChatPage.jsx - WITHOUT STATUS PANEL
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -7,8 +7,6 @@ import { Phone, Video, Trash2 } from "lucide-react";
 import useWebSocket from "../hooks/useWebSocket.jsx";
 
 const ChatPage = () => {
-  console.log('🔄 ChatPage RENDERING');
-  
   const { friendId } = useParams();
   const navigate = useNavigate();
   const chatBoxRef = useRef(null);
@@ -26,25 +24,13 @@ const ChatPage = () => {
   const userId = user?._id || user?.id;
   
   // Use the WebSocket hook
-  const { send, sendTyping, sendChatMessage, onMessage, getStatus, isConnected } = useWebSocket();
-  
-  console.log('📊 ChatPage State:', {
-    userId,
-    isLogin,
-    friendId,
-    isConnected,
-    connectionStatus: getStatus()
-  });
+  const { sendTyping, sendChatMessage, onMessage, isConnected } = useWebSocket();
 
   // Handle incoming WebSocket messages
   useEffect(() => {
     if (!userId || !friendId) return;
     
-    console.log('📝 Registering WebSocket message handler...');
-    
     const cleanup = onMessage(`chat_${friendId}`, (messageData) => {
-      console.log('🎉 ChatPage received message:', messageData);
-      
       // Check if this message is for the current chat
       const isForThisChat = (
         (messageData.sender?._id === userId && messageData.receiver?._id === friendId) ||
@@ -52,7 +38,6 @@ const ChatPage = () => {
       );
       
       if (isForThisChat) {
-        console.log('✅ Adding message to chat');
         setMessages(prev => [...prev, messageData]);
         
         // Scroll to bottom
@@ -73,7 +58,6 @@ const ChatPage = () => {
       const { senderId, isTyping } = event.detail;
       
       if (senderId === friendId) {
-        console.log(`⌨️ Friend ${friendId} is typing:`, isTyping);
         setFriendTyping(isTyping);
         
         if (friendTypingTimeoutRef.current) {
@@ -100,7 +84,6 @@ const ChatPage = () => {
 
   // Fetch friend's details
   const fetchFriend = useCallback(async () => {
-    console.log('👤 Fetching friend...');
     if (!isLogin || !friendId) return;
     
     try {
@@ -109,10 +92,9 @@ const ChatPage = () => {
           Authorization: `Bearer ${token}`
         }
       });
-      console.log('✅ Friend loaded:', res.data.firstName);
       setFriend(res.data);
     } catch (err) {
-      console.error("❌ Error fetching friend:", err);
+      console.error("Error fetching friend:", err);
       if (err.response?.status === 401) {
         navigate('/login');
       } else {
@@ -123,7 +105,6 @@ const ChatPage = () => {
 
   // Fetch chat messages
   const fetchMessages = useCallback(async () => {
-    console.log('📨 Fetching messages...');
     if (!userId || !friendId) return;
     
     try {
@@ -133,17 +114,15 @@ const ChatPage = () => {
           Authorization: `Bearer ${token}`
         }
       });
-      console.log('✅ Messages loaded:', res.data.length);
       setMessages(res.data);
     } catch (err) {
-      console.error("❌ Error fetching messages:", err);
+      console.error("Error fetching messages:", err);
     }
   }, [userId, friendId, token]);
 
   // Load initial data
   useEffect(() => {
     if (isLogin && userId && friendId) {
-      console.log('📡 Loading chat data...');
       fetchFriend();
       fetchMessages();
     }
@@ -151,10 +130,7 @@ const ChatPage = () => {
 
   // Handle typing indicator
   const handleTyping = useCallback(() => {
-    if (!friendId || !isConnected) {
-      console.log('❌ Cannot send typing: not connected');
-      return;
-    }
+    if (!friendId || !isConnected) return;
     
     if (!isTyping) {
       sendTyping(friendId, true);
@@ -181,21 +157,14 @@ const ChatPage = () => {
 
   // Send message
   const handleSendMessage = async () => {
-    console.log('📤 Attempting to send message');
-    
-    if (!message.trim()) {
-      console.log('❌ Message is empty');
-      return;
-    }
+    if (!message.trim()) return;
     
     if (!userId || !friendId) {
-      console.log('❌ Missing user IDs');
       alert('Cannot send message: Missing user information');
       return;
     }
 
     try {
-      console.log('💾 Saving to database...');
       const response = await axios.post(`http://localhost:5000/api/messages`, {
         sender: userId,
         receiver: friendId,
@@ -207,7 +176,6 @@ const ChatPage = () => {
       });
       
       const savedMessage = response.data;
-      console.log('✅ Message saved to DB:', savedMessage._id);
       
       // Send via WebSocket for real-time delivery
       if (isConnected) {
@@ -216,9 +184,6 @@ const ChatPage = () => {
         // Send typing stop
         sendTyping(friendId, false);
         setIsTyping(false);
-      } else {
-        console.log('⚠️ WebSocket not connected, real-time disabled');
-        // Message will still appear for sender since we add it to state
       }
       
       // Add to local state immediately (optimistic update)
@@ -233,7 +198,7 @@ const ChatPage = () => {
       }, 50);
       
     } catch (err) {
-      console.error('❌ Error sending message:', err);
+      console.error('Error sending message:', err);
       if (err.response?.status === 401) {
         alert('Session expired. Please login again.');
         navigate('/login');
@@ -294,42 +259,9 @@ const ChatPage = () => {
       </div>
     );
   }
-
-  console.log('🎨 Rendering ChatPage UI');
   
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      {/* Connection Status */}
-      <div className="mb-4 p-3 bg-gray-100 rounded-lg text-sm">
-        <div className="flex justify-between items-center">
-          <div>
-            <span className="font-bold">Status:</span>
-            <span className={`ml-2 px-2 py-1 rounded ${
-              isConnected ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-            }`}>
-              {isConnected ? 'REAL-TIME CONNECTED' : 'CONNECTING...'}
-            </span>
-          </div>
-          <div>
-            <span className="font-bold">User:</span>
-            <span className="ml-2">{userId?.substring(0, 8)}...</span>
-          </div>
-          <div>
-            <span className="font-bold">Messages:</span>
-            <span className="ml-2">{messages.length}</span>
-          </div>
-          <button 
-            onClick={() => {
-              console.log('Manual ping test');
-              send({ type: 'ping' });
-            }}
-            className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs"
-          >
-            Test WS
-          </button>
-        </div>
-      </div>
-
       {/* Header with name + actions */}
       <div className="flex justify-between items-center mb-6 bg-white p-4 rounded-lg shadow">
         <div className="flex items-center space-x-4">
@@ -345,6 +277,7 @@ const ChatPage = () => {
               <p className="text-sm text-gray-600">
                 {friend.isOnline ? 'Online' : 'Offline'}
                 {friendTyping && " • Typing..."}
+                {!isConnected && " • Connecting..."}
               </p>
             </div>
           </div>
@@ -384,9 +317,6 @@ const ChatPage = () => {
             <div className="text-6xl mb-4">👋</div>
             <p className="text-lg">No messages yet</p>
             <p className="text-sm">Start a conversation with {friend.firstName}!</p>
-            <p className="text-xs mt-2 text-gray-500">
-              {isConnected ? 'Real-time chat is active' : 'Connecting to real-time...'}
-            </p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -445,7 +375,7 @@ const ChatPage = () => {
             value={message}
             onChange={handleMessageChange}
             onKeyPress={handleKeyPress}
-            className="w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-3 rounded-lg border bg-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
         <button
@@ -461,18 +391,14 @@ const ChatPage = () => {
         </button>
       </div>
 
-      {/* Connection Status Footer */}
-      <div className="mt-4 text-center">
-        <div className="inline-flex items-center space-x-2 text-sm">
-          <div className={`w-2 h-2 rounded-full ${
-            isConnected ? 'bg-green-500' : 'bg-yellow-500'
-          }`}></div>
-          <span className="text-gray-600">
-            {isConnected ? 'Real-time chat active' : 'Connecting to real-time...'}
-          </span>
-          {isTyping && <span className="text-blue-600">(You are typing...)</span>}
+      {/* Minimal Connection Status (optional - can be removed) */}
+      {!isConnected && (
+        <div className="mt-2 text-center">
+          <p className="text-xs text-yellow-600">
+            Connecting to real-time chat...
+          </p>
         </div>
-      </div>
+      )}
     </div>
   );
 };
