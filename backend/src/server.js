@@ -1,8 +1,8 @@
-// src/server.js
+// backend/src/server.js
 import path from "path";
 import connectDB from "./config/db.js";
 import express from "express";
-import http from "http"; // Import http module
+import http from "http";
 import dotenv from "dotenv";
 import cors from "cors";
 import authRoutes from "./routes/authRoutes.js";
@@ -20,7 +20,9 @@ import notificationsRoutes from "./routes/notificationsRoutes.js";
 import privacyRoutes from "./routes/privacyRoutes.js";
 import securityRoutes from "./routes/securityRoutes.js";
 import dataRoutes from "./routes/dataRoutes.js";
-import webSocketManager from "./websocket.js"; // Import the WebSocket manager
+// ADD THIS IMPORT
+import paymentRoutes from "./routes/paymentRoutes.js"; // Add this line
+import webSocketManager from "./websocket.js";
 
 dotenv.config();
 
@@ -35,11 +37,8 @@ const server = http.createServer(app);
 webSocketManager.initialize(server);
 
 // Routes
-// Add this to your middleware section
 app.use("/uploads", express.static("uploads"));
-// Add this to your routes section
 app.use("/api/files", fileRoutes);
-// Add this with your other route imports
 app.use("/api/appearance", appearanceRoutes);
 app.use("/api/notifications", notificationsRoutes);
 app.use("/api/privacy", privacyRoutes);
@@ -54,6 +53,8 @@ app.use("/api/plans", planRoutes);
 app.use("/api/search", searchRoutes);
 app.use("/api/subscriptions", subscriptionRoutes);
 app.use("/api/calendar", calendarRoutes);
+// ADD THIS ROUTE
+app.use("/api/payments", paymentRoutes); // Add this line
 
 const PORT = process.env.PORT || 5000;
 

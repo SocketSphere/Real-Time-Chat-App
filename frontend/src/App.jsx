@@ -22,7 +22,8 @@ import ChatPage from "./components/ChatPage"
 import GroupChatPage from "./components/GroupChatPage"
 import useNotificationCount from './hooks/useNotificationCount';
 import useWebSocket from './hooks/useWebSocket';
-
+import PaymentSuccess from './pages/PaymentSuccess';
+import PaymentFailed from './pages/PaymentFailed';
 function App() {
   useNotificationCount();
   useWebSocket();
@@ -42,6 +43,9 @@ function App() {
         <Route path="/about-us" element={<AboutUs/>}/>
         <Route path="/profile" element={<Profile/>}/>
         <Route path="/settings" element={<Setting/>}/>
+        <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/payment-failed" element={<PaymentFailed />} />
+        
         
         <Route path="*" element={<NotFound/>}/>
 
