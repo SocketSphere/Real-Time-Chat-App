@@ -1,9 +1,10 @@
-// frontend/src/components/ChatPage.jsx - FINAL FIXED VERSION
+// frontend/src/components/ChatPage.jsx - USING useWebSocket HOOK
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { Phone, Video, Trash2 } from "lucide-react";
+import useWebSocket from "../hooks/useWebSocket.jsx";
 
 const ChatPage = () => {
   console.log('🔄 ChatPage RENDERING');
@@ -14,11 +15,8 @@ const ChatPage = () => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [friend, setFriend] = useState(null);
-  const [socket, setSocket] = useState(null);
   const [isTyping, setIsTyping] = useState(false);
   const [friendTyping, setFriendTyping] = useState(false);
-  const [connectionStatus, setConnectionStatus] = useState('disconnected');
-  const [isLoadingAuth, setIsLoadingAuth] = useState(true);
   
   const typingTimeoutRef = useRef(null);
   const friendTypingTimeoutRef = useRef(null);
@@ -27,186 +25,78 @@ const ChatPage = () => {
   const { user, isLogin, token } = useSelector((state) => state.auth);
   const userId = user?._id || user?.id;
   
-  console.log('📊 Redux Auth State:', {
+  // Use the WebSocket hook
+  const { send, sendTyping, sendChatMessage, onMessage, getStatus, isConnected } = useWebSocket();
+  
+  console.log('📊 ChatPage State:', {
     userId,
     isLogin,
-    tokenExists: !!token,
-    userExists: !!user
+    friendId,
+    isConnected,
+    connectionStatus: getStatus()
   });
 
-  // Fix: Wait for Redux to hydrate from localStorage
+  // Handle incoming WebSocket messages
   useEffect(() => {
-    console.log('🔐 Auth hydration check');
+    if (!userId || !friendId) return;
     
-    // Check localStorage directly to confirm auth
-    const localToken = localStorage.getItem("token");
-    const localUserStr = localStorage.getItem("user");
+    console.log('📝 Registering WebSocket message handler...');
     
-    console.log('LocalStorage check:', {
-      localToken: !!localToken,
-      localUser: !!localUserStr
+    const cleanup = onMessage(`chat_${friendId}`, (messageData) => {
+      console.log('🎉 ChatPage received message:', messageData);
+      
+      // Check if this message is for the current chat
+      const isForThisChat = (
+        (messageData.sender?._id === userId && messageData.receiver?._id === friendId) ||
+        (messageData.sender?._id === friendId && messageData.receiver?._id === userId)
+      );
+      
+      if (isForThisChat) {
+        console.log('✅ Adding message to chat');
+        setMessages(prev => [...prev, messageData]);
+        
+        // Scroll to bottom
+        setTimeout(() => {
+          if (chatBoxRef.current) {
+            chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
+          }
+        }, 50);
+      }
     });
     
-    // If Redux doesn't have auth but localStorage does, we might need to wait
-    if (!isLogin && localToken) {
-      console.log('⚠️ Redux not hydrated yet, but localStorage has auth');
-      console.log('This is normal on initial load - Redux needs a moment');
-    }
-    
-    // Mark auth as loaded after a brief delay
-    const timer = setTimeout(() => {
-      setIsLoadingAuth(false);
-      console.log('✅ Auth loading complete');
-    }, 100);
-    
-    return () => clearTimeout(timer);
-  }, []);
+    return cleanup;
+  }, [userId, friendId, onMessage]);
 
-  // Initialize WebSocket connection - FIXED
+  // Listen for typing indicators
   useEffect(() => {
-    console.log('🔌 WebSocket useEffect triggered');
-    console.log('Conditions:', { isLogin, userId, friendId, isLoadingAuth });
-    
-    // Don't proceed if still loading auth or missing requirements
-    if (isLoadingAuth || !userId || !friendId) {
-      console.log('⏳ Waiting for:', {
-        loadingAuth: isLoadingAuth,
-        hasUserId: !!userId,
-        hasFriendId: !!friendId
-      });
-      return;
-    }
-    
-    // If not logged in, redirect
-    if (!isLogin) {
-      console.log('❌ Not logged in, redirecting to login');
-      navigate('/login');
-      return;
-    }
-    
-    console.log('✅ All conditions met, creating WebSocket...');
-    setConnectionStatus('connecting');
-    
-    try {
-      const ws = new WebSocket('ws://localhost:5000/ws');
+    const handleTyping = (event) => {
+      const { senderId, isTyping } = event.detail;
       
-      ws.onopen = () => {
-        console.log('✅ WebSocket CONNECTED');
-        setConnectionStatus('connected');
+      if (senderId === friendId) {
+        console.log(`⌨️ Friend ${friendId} is typing:`, isTyping);
+        setFriendTyping(isTyping);
         
-        // Authenticate immediately
-        const authMessage = JSON.stringify({
-          type: 'auth',
-          userId: userId
-        });
-        console.log('📤 Sending WebSocket auth:', { userId });
-        ws.send(authMessage);
-      };
-      
-      ws.onmessage = (event) => {
-        console.log('📥 RAW WebSocket message:', event.data);
-        
-        try {
-          const data = JSON.parse(event.data);
-          console.log('📋 PARSED WebSocket message type:', data.type);
-          
-          if (data.type === 'new_message') {
-            console.log('🎉 REAL-TIME MESSAGE RECEIVED!', data.data);
-            
-            // Check if this message belongs to this chat
-            const messageData = data.data;
-            const isForThisChat = (
-              (messageData.sender?._id === userId && messageData.receiver?._id === friendId) ||
-              (messageData.sender?._id === friendId && messageData.receiver?._id === userId) ||
-              messageData.senderId === friendId ||
-              messageData.receiverId === userId
-            );
-            
-            if (isForThisChat) {
-              console.log('✅ Adding message to chat');
-              setMessages(prev => [...prev, messageData]);
-              
-              // Scroll to bottom
-              setTimeout(() => {
-                if (chatBoxRef.current) {
-                  chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
-                }
-              }, 50);
-            } else {
-              console.log('⚠️ Message not for this chat');
-            }
-          } 
-          else if (data.type === 'user_typing') {
-            console.log('⌨️ Typing indicator:', data.data);
-            if (data.data.senderId === friendId) {
-              setFriendTyping(data.data.isTyping);
-              
-              if (friendTypingTimeoutRef.current) {
-                clearTimeout(friendTypingTimeoutRef.current);
-              }
-              
-              if (data.data.isTyping) {
-                friendTypingTimeoutRef.current = setTimeout(() => {
-                  setFriendTyping(false);
-                }, 3000);
-              }
-            }
-          }
-          else if (data.type === 'auth_success') {
-            console.log('✅ WebSocket authentication successful');
-          }
-          else if (data.type === 'connection') {
-            console.log('🔗 WebSocket connection established');
-          }
-          else {
-            console.log('📦 Other WebSocket message:', data.type);
-          }
-        } catch (error) {
-          console.error('❌ Error parsing WebSocket message:', error);
+        if (friendTypingTimeoutRef.current) {
+          clearTimeout(friendTypingTimeoutRef.current);
         }
-      };
-      
-      ws.onerror = (error) => {
-        console.error('💥 WebSocket ERROR:', error);
-        setConnectionStatus('error');
-      };
-      
-      ws.onclose = (event) => {
-        console.log('❌ WebSocket CLOSED:', event.code, event.reason);
-        setConnectionStatus('disconnected');
         
-        // Try to reconnect after 3 seconds
-        setTimeout(() => {
-          console.log('🔄 Attempting to reconnect...');
-          // This will trigger the useEffect again since dependencies haven't changed
-        }, 3000);
-      };
-      
-      setSocket(ws);
-      
-      // Store for debugging
-      window.debugChatSocket = ws;
-      console.log('🔧 Socket available as window.debugChatSocket');
-      
-    } catch (error) {
-      console.error('💥 Error creating WebSocket:', error);
-      setConnectionStatus('error');
-    }
+        if (isTyping) {
+          friendTypingTimeoutRef.current = setTimeout(() => {
+            setFriendTyping(false);
+          }, 3000);
+        }
+      }
+    };
     
-    // Cleanup function
+    window.addEventListener('websocket:typing', handleTyping);
+    
     return () => {
-      console.log('🧹 Cleaning up WebSocket');
-      if (socket) {
-        socket.close();
-      }
-      if (typingTimeoutRef.current) {
-        clearTimeout(typingTimeoutRef.current);
-      }
+      window.removeEventListener('websocket:typing', handleTyping);
       if (friendTypingTimeoutRef.current) {
         clearTimeout(friendTypingTimeoutRef.current);
       }
     };
-  }, [isLogin, userId, friendId, isLoadingAuth, navigate]); // Added isLoadingAuth
+  }, [friendId]);
 
   // Fetch friend's details
   const fetchFriend = useCallback(async () => {
@@ -224,7 +114,6 @@ const ChatPage = () => {
     } catch (err) {
       console.error("❌ Error fetching friend:", err);
       if (err.response?.status === 401) {
-        // Token expired, redirect to login
         navigate('/login');
       } else {
         navigate("/contact");
@@ -253,39 +142,22 @@ const ChatPage = () => {
 
   // Load initial data
   useEffect(() => {
-    console.log('📡 Data loading useEffect');
-    
-    if (isLogin && userId && friendId && !isLoadingAuth) {
-      console.log('✅ Loading chat data...');
+    if (isLogin && userId && friendId) {
+      console.log('📡 Loading chat data...');
       fetchFriend();
       fetchMessages();
-    } else {
-      console.log('⏳ Waiting to load data:', {
-        isLogin,
-        userId,
-        friendId,
-        isLoadingAuth
-      });
     }
-  }, [isLogin, userId, friendId, isLoadingAuth, fetchFriend, fetchMessages]);
+  }, [isLogin, userId, friendId, fetchFriend, fetchMessages]);
 
   // Handle typing indicator
   const handleTyping = useCallback(() => {
-    console.log('⌨️ handleTyping called');
-    if (!socket || socket.readyState !== WebSocket.OPEN || !friendId) {
-      console.log('❌ Cannot send typing: socket not ready');
+    if (!friendId || !isConnected) {
+      console.log('❌ Cannot send typing: not connected');
       return;
     }
     
     if (!isTyping) {
-      const typingMsg = JSON.stringify({
-        type: 'typing',
-        senderId: userId,
-        receiverId: friendId,
-        isTyping: true
-      });
-      console.log('📤 Sending typing start');
-      socket.send(typingMsg);
+      sendTyping(friendId, true);
       setIsTyping(true);
     }
     
@@ -294,19 +166,12 @@ const ChatPage = () => {
     }
     
     typingTimeoutRef.current = setTimeout(() => {
-      if (socket && socket.readyState === WebSocket.OPEN) {
-        const stopTypingMsg = JSON.stringify({
-          type: 'typing',
-          senderId: userId,
-          receiverId: friendId,
-          isTyping: false
-        });
-        console.log('📤 Sending typing stop');
-        socket.send(stopTypingMsg);
+      if (isConnected) {
+        sendTyping(friendId, false);
         setIsTyping(false);
       }
     }, 2000);
-  }, [socket, userId, friendId, isTyping]);
+  }, [friendId, isConnected, sendTyping, isTyping]);
 
   // Handle message input change
   const handleMessageChange = (e) => {
@@ -317,12 +182,6 @@ const ChatPage = () => {
   // Send message
   const handleSendMessage = async () => {
     console.log('📤 Attempting to send message');
-    console.log('Current state:', {
-      message: message,
-      socketReady: socket?.readyState,
-      userId,
-      friendId
-    });
     
     if (!message.trim()) {
       console.log('❌ Message is empty');
@@ -350,33 +209,19 @@ const ChatPage = () => {
       const savedMessage = response.data;
       console.log('✅ Message saved to DB:', savedMessage._id);
       
-      // Send via WebSocket for real-time
-      if (socket && socket.readyState === WebSocket.OPEN) {
-        const wsMessage = JSON.stringify({
-          type: 'send_message',
-          senderId: userId,
-          receiverId: friendId,
-          content: message,
-          messageId: savedMessage._id,
-          timestamp: new Date().toISOString()
-        });
-        console.log('📤 Sending via WebSocket');
-        socket.send(wsMessage);
+      // Send via WebSocket for real-time delivery
+      if (isConnected) {
+        sendChatMessage(friendId, message, savedMessage._id);
         
         // Send typing stop
-        socket.send(JSON.stringify({
-          type: 'typing',
-          senderId: userId,
-          receiverId: friendId,
-          isTyping: false
-        }));
+        sendTyping(friendId, false);
         setIsTyping(false);
       } else {
         console.log('⚠️ WebSocket not connected, real-time disabled');
-        // Still works, just not real-time
+        // Message will still appear for sender since we add it to state
       }
       
-      // Add to local state immediately
+      // Add to local state immediately (optimistic update)
       setMessages(prev => [...prev, savedMessage]);
       setMessage("");
       
@@ -432,18 +277,7 @@ const ChatPage = () => {
   }, [messages]);
 
   // Show loading while auth is being determined
-  if (isLoadingAuth) {
-    return (
-      <div className="p-6 text-center">
-        <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-        <p className="mt-2">Checking authentication...</p>
-      </div>
-    );
-  }
-
-  // Redirect if not logged in
   if (!isLogin) {
-    // useEffect will handle redirect, but show message
     return (
       <div className="p-6 text-center">
         <p>You need to be logged in to chat.</p>
@@ -465,13 +299,15 @@ const ChatPage = () => {
   
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      {/* Debug panel - remove in production */}
-      <div className="mb-4 p-3 bg-gray-100 rounded-lg text-sm font-mono">
+      {/* Connection Status */}
+      <div className="mb-4 p-3 bg-gray-100 rounded-lg text-sm">
         <div className="flex justify-between items-center">
           <div>
             <span className="font-bold">Status:</span>
-            <span className={`ml-2 px-2 py-1 rounded ${connectionStatus === 'connected' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
-              {connectionStatus.toUpperCase()}
+            <span className={`ml-2 px-2 py-1 rounded ${
+              isConnected ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+            }`}>
+              {isConnected ? 'REAL-TIME CONNECTED' : 'CONNECTING...'}
             </span>
           </div>
           <div>
@@ -484,10 +320,8 @@ const ChatPage = () => {
           </div>
           <button 
             onClick={() => {
-              console.log('Manual socket test');
-              if (socket) {
-                socket.send(JSON.stringify({ type: 'ping' }));
-              }
+              console.log('Manual ping test');
+              send({ type: 'ping' });
             }}
             className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs"
           >
@@ -550,7 +384,9 @@ const ChatPage = () => {
             <div className="text-6xl mb-4">👋</div>
             <p className="text-lg">No messages yet</p>
             <p className="text-sm">Start a conversation with {friend.firstName}!</p>
-            <p className="text-xs mt-2 text-gray-500">WebSocket: {connectionStatus}</p>
+            <p className="text-xs mt-2 text-gray-500">
+              {isConnected ? 'Real-time chat is active' : 'Connecting to real-time...'}
+            </p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -625,19 +461,16 @@ const ChatPage = () => {
         </button>
       </div>
 
-      {/* Connection Status */}
+      {/* Connection Status Footer */}
       <div className="mt-4 text-center">
         <div className="inline-flex items-center space-x-2 text-sm">
           <div className={`w-2 h-2 rounded-full ${
-            connectionStatus === 'connected' ? 'bg-green-500' :
-            connectionStatus === 'connecting' ? 'bg-yellow-500' :
-            'bg-red-500'
+            isConnected ? 'bg-green-500' : 'bg-yellow-500'
           }`}></div>
           <span className="text-gray-600">
-            {connectionStatus === 'connected' ? 'Real-time chat active' :
-             connectionStatus === 'connecting' ? 'Connecting to real-time...' :
-             'Real-time disconnected'}
+            {isConnected ? 'Real-time chat active' : 'Connecting to real-time...'}
           </span>
+          {isTyping && <span className="text-blue-600">(You are typing...)</span>}
         </div>
       </div>
     </div>
