@@ -5,7 +5,28 @@ import Subscription from '../models/Subscription.js';
 import axios from 'axios';
 
 // Chapa configuration
-const CHAPA_SECRET_KEY = process.env.CHAPA_SECRET_KEY || 'CHASECK_TEST-WLoHD1KO8phF4dU2qyB0zox6bQCZayXx';
+const CHAPA_SECRET_KEY = process.env.CHAPA_SECRET_KEY;
+
+// Helper function to validate and get email
+const getValidEmailForChapa = (user) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  
+  if (emailRegex.test(user.loginId)) {
+    console.log('✅ LoginId is a valid email:', user.loginId);
+    return user.loginId;
+  }
+  
+  const cleanLoginId = user.loginId
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '')
+    .substring(0, 30);
+  
+  const timestamp = Date.now().toString().slice(-6);
+  const generatedEmail = `${cleanLoginId}${timestamp}@chat-app.com`;
+  
+  console.log('📧 Generated email for Chapa:', generatedEmail);
+  return generatedEmail;
+};
 
 // Initialize payment
 export const initializePayment = async (req, res) => {
@@ -37,6 +58,10 @@ export const initializePayment = async (req, res) => {
       lastName: user.lastName 
     });
 
+    // Get valid email for Chapa
+    const userEmail = getValidEmailForChapa(user);
+    console.log('📧 Email for Chapa payment:', userEmail);
+
     // Create payment record
     const payment = new Payment({
       userId,
@@ -45,24 +70,14 @@ export const initializePayment = async (req, res) => {
       amount,
       currency,
       tx_ref,
-      status: 'pending'
+      status: 'pending',
+      userEmail
     });
     await payment.save();
 
     console.log('💾 Payment record created:', payment._id);
 
-    // Get user email - Chapa requires email
-    let userEmail = user.email;
-    
-    // If user doesn't have email in DB, create one
-    if (!userEmail) {
-      userEmail = user.loginId.includes('@') 
-        ? user.loginId 
-        : `${user.loginId}@chat-app.com`;
-      console.log('📧 Generated email for Chapa:', userEmail);
-    }
-
-    // Prepare Chapa payment data - SIMPLIFIED VERSION
+    // 🔥 CRITICAL FIX: Use ONLY callback_url, NOT return_url
     const paymentData = {
       amount: amount.toString(),
       currency,
@@ -70,21 +85,24 @@ export const initializePayment = async (req, res) => {
       first_name: user.firstName || 'Customer',
       last_name: user.lastName || 'User',
       tx_ref,
+      // 🔥 ONLY callback_url - Chapa will call this after payment
       callback_url: `${process.env.BASE_URL || 'http://localhost:5000'}/api/payments/verify`,
-      return_url: `${process.env.FRONTEND_URL || 'http://127.0.0.1:5176'}/payment-success`,
-      // Remove customization for now, some Chapa versions don't support it
+      // ❌ REMOVE return_url - This bypasses verification
+      return_url: `${process.env.FRONTEND_URL}/payment-success?tx_ref=${tx_ref}`,
       meta: {
         planName,
         billingCycle,
         userId: userId.toString(),
-        paymentId: payment._id.toString()
+        paymentId: payment._id.toString(),
+        loginId: user.loginId
       }
     };
 
     console.log('📤 Sending to Chapa API:', { 
       email: paymentData.email,
       amount: paymentData.amount,
-      tx_ref: paymentData.tx_ref 
+      tx_ref: paymentData.tx_ref,
+      callback_url: paymentData.callback_url
     });
 
     // Initialize Chapa payment using axios
@@ -117,27 +135,33 @@ export const initializePayment = async (req, res) => {
     }
 
   } catch (error) {
-    console.error('💥 Payment initialization error:');
-    console.error('- Error message:', error.message);
-    console.error('- Response data:', error.response?.data);
-    console.error('- Status code:', error.response?.status);
-    
+    console.error('💥 Payment initialization error:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to initialize payment',
-      error: error.response?.data?.message || error.message,
-      details: error.response?.data
+      error: error.message
     });
   }
 };
 
-
-// Verify payment (keep existing)
+// In backend/src/controllers/paymentController.js
 export const verifyPayment = async (req, res) => {
   try {
-    const { tx_ref } = req.query;
-    console.log('🔍 Verifying payment:', tx_ref);
+    const { tx_ref, callback, status } = req.query;
+    console.log('🔍 VERIFYING PAYMENT - Chapa callback received:', { tx_ref, callback, status });
+    
+    // Check if this is a JSONP request
+    const isJsonp = callback && typeof callback === 'string';
+    
+    if (!tx_ref) {
+      console.error('❌ No transaction reference in callback');
+      if (isJsonp) {
+        return res.jsonp({ success: false, error: 'No transaction reference' });
+      }
+      return res.redirect(`${process.env.FRONTEND_URL}/payment-failed?error=no_tx_ref`);
+    }
 
+    // Verify with Chapa
     const response = await axios.get(
       `https://api.chapa.co/v1/transaction/verify/${tx_ref}`,
       {
@@ -147,19 +171,27 @@ export const verifyPayment = async (req, res) => {
       }
     );
 
-    const paymentData = response.data.data;
-    console.log('✅ Payment verification result:', paymentData.status);
+    const chapaData = response.data.data;
+    console.log('✅ Chapa verification status:', chapaData.status);
 
+    // Find payment record
     const payment = await Payment.findOne({ tx_ref });
     if (!payment) {
-      console.error('❌ Payment not found:', tx_ref);
+      console.error('❌ Payment record not found:', tx_ref);
+      if (isJsonp) {
+        return res.jsonp({ success: false, error: 'Payment not found' });
+      }
       return res.redirect(`${process.env.FRONTEND_URL}/payment-failed?error=payment_not_found`);
     }
 
-    if (paymentData.status === 'success') {
+    if (chapaData.status === 'success') {
+      console.log('✅ Payment successful, updating records...');
+      
+      // Update payment status
       payment.status = 'success';
-      payment.chapa_transaction_id = paymentData.id;
+      payment.chapa_transaction_id = chapaData.id;
       payment.payment_date = new Date();
+      payment.metadata = chapaData;
       await payment.save();
 
       // Update subscription
@@ -189,27 +221,81 @@ export const verifyPayment = async (req, res) => {
         'subscription.expiresAt': expiryDate
       });
 
-      console.log('✅ Payment successful, redirecting...');
-      res.redirect(`${process.env.FRONTEND_URL || 'http://127.0.0.1:5176'}/payment-success?tx_ref=${tx_ref}`);
+      console.log('🎉 All records updated');
+      
+      // Handle JSONP response
+      if (isJsonp) {
+        console.log('📤 Sending JSONP response to Chapa');
+        return res.jsonp({
+          success: true,
+          redirect_url: `${process.env.FRONTEND_URL || 'http://127.0.0.1:5176'}/payment-success?tx_ref=${tx_ref}&plan=${payment.planName}&amount=${payment.amount}&currency=${payment.currency}&billingCycle=${payment.billingCycle}&status=success`
+        });
+      }
+      
+      // Normal redirect
+      const successUrl = new URL(`${process.env.FRONTEND_URL || 'http://127.0.0.1:5176'}/payment-success`);
+      successUrl.searchParams.append('tx_ref', tx_ref);
+      successUrl.searchParams.append('plan', payment.planName);
+      successUrl.searchParams.append('amount', payment.amount.toString());
+      successUrl.searchParams.append('currency', payment.currency || 'ETB');
+      successUrl.searchParams.append('billingCycle', payment.billingCycle);
+      successUrl.searchParams.append('paymentId', payment._id.toString());
+      successUrl.searchParams.append('chapa_id', chapaData.id || '');
+      successUrl.searchParams.append('status', 'success');
+      successUrl.searchParams.append('date', new Date().toISOString());
+      
+      console.log('🔗 Redirecting to success page:', successUrl.toString());
+      res.redirect(successUrl.toString());
+      
     } else {
+      console.log('❌ Payment failed with status:', chapaData.status);
+      
       payment.status = 'failed';
+      payment.metadata = chapaData;
       await payment.save();
-      res.redirect(`${process.env.FRONTEND_URL}/payment-failed?tx_ref=${tx_ref}`);
+
+      // Handle JSONP for failure
+      if (isJsonp) {
+        return res.jsonp({
+          success: false,
+          redirect_url: `${process.env.FRONTEND_URL}/payment-failed?tx_ref=${tx_ref}&status=${chapaData.status}`
+        });
+      }
+      
+      const failUrl = new URL(`${process.env.FRONTEND_URL}/payment-failed`);
+      failUrl.searchParams.append('tx_ref', tx_ref);
+      failUrl.searchParams.append('status', chapaData.status);
+      res.redirect(failUrl.toString());
     }
   } catch (error) {
     console.error('❌ Verification error:', error.message);
-    res.redirect(`${process.env.FRONTEND_URL}/payment-failed?error=verification_failed`);
+    
+    // Handle JSONP error
+    if (req.query.callback) {
+      return res.jsonp({
+        success: false,
+        error: 'verification_failed',
+        message: error.message
+      });
+    }
+    
+    const failUrl = new URL(`${process.env.FRONTEND_URL}/payment-failed`);
+    failUrl.searchParams.append('error', 'verification_failed');
+    if (req.query.tx_ref) {
+      failUrl.searchParams.append('tx_ref', req.query.tx_ref);
+    }
+    res.redirect(failUrl.toString());
   }
 };
 
-// Get payment history (keep existing)
+// Get payment history
 export const getPaymentHistory = async (req, res) => {
   try {
     const userId = req.user._id;
     
     const payments = await Payment.find({ userId })
       .sort({ createdAt: -1 })
-      .select('planName billingCycle amount status payment_date tx_ref');
+      .select('planName billingCycle amount status payment_date tx_ref userEmail');
 
     res.json({
       success: true,

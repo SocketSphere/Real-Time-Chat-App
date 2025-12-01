@@ -20,21 +20,37 @@ import notificationsRoutes from "./routes/notificationsRoutes.js";
 import privacyRoutes from "./routes/privacyRoutes.js";
 import securityRoutes from "./routes/securityRoutes.js";
 import dataRoutes from "./routes/dataRoutes.js";
-// ADD THIS IMPORT
-import paymentRoutes from "./routes/paymentRoutes.js"; // Add this line
-import webSocketManager from "./websocket.js";
+import paymentRoutes from "./routes/paymentRoutes.js";
+// import webSocketManager from "./websocket.js";
 
 dotenv.config();
 
 const app = express();
-app.use(cors());
+
+// 🔥 UPDATED CORS CONFIGURATION
+app.use(cors({
+  origin: [
+    'http://127.0.0.1:5176', // Your frontend
+    'http://localhost:5176',  // Alternative frontend URL
+    'https://checkout.chapa.co', // Chapa checkout domain
+    'https://api.chapa.co', // Chapa API domain
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}));
+
+// Handle preflight requests
+app.options('*', cors());
+
 app.use(express.json());
+app.use(express.urlencoded({ extended: true })); // Add this for form data
 
 // Create HTTP server
 const server = http.createServer(app);
 
 // Initialize WebSocket with the HTTP server
-webSocketManager.initialize(server);
+// webSocketManager.initialize(server);
 
 // Routes
 app.use("/uploads", express.static("uploads"));
@@ -53,8 +69,23 @@ app.use("/api/plans", planRoutes);
 app.use("/api/search", searchRoutes);
 app.use("/api/subscriptions", subscriptionRoutes);
 app.use("/api/calendar", calendarRoutes);
-// ADD THIS ROUTE
-app.use("/api/payments", paymentRoutes); // Add this line
+app.use("/api/payments", paymentRoutes);
+
+// Special route for Chapa callback (JSONP support)
+app.get("/api/payments/verify", (req, res, next) => {
+  // Set CORS headers specifically for this route
+  res.header('Access-Control-Allow-Origin', 'https://checkout.chapa.co');
+  res.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  
+  // Handle OPTIONS preflight
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  
+  next();
+});
 
 const PORT = process.env.PORT || 5000;
 
@@ -62,6 +93,7 @@ connectDB()
   .then(() => {
     server.listen(PORT, () => {
       console.log("Server started on PORT:", PORT);
+      console.log("✅ CORS configured for Chapa");
     });
   })
   .catch(err => console.log(err));

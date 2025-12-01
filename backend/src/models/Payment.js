@@ -29,6 +29,11 @@ const paymentSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
+  // Store the email used for payment
+  userEmail: {
+    type: String,
+    required: true
+  },
   chapa_transaction_id: {
     type: String
   },

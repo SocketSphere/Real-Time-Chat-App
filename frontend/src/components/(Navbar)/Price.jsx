@@ -8,19 +8,21 @@ import toast from "react-hot-toast"
 
 const Price = () => {
   const [billingCycle, setBillingCycle] = useState("monthly")
-  const [loading, setLoading] = useState(false)
+  const [loadingPlan, setLoadingPlan] = useState(null) // Track which plan is loading
   
   // Get user from Redux store
   const { user, token } = useSelector((state) => state.auth)
 
   const plans = [
     {
+      id: "free", // Add unique ID for each plan
       name: "Free",
       price: { monthly: "Br 0", yearly: "Br 0" },
       features: ["Basic messaging", "1 group chat", "Limited file sharing"],
       popular: false,
     },
     {
+      id: "advanced",
       name: "Advanced",
       price: { monthly: "Br 10", yearly: "Br 100" },
       priceValue: { monthly: 10, yearly: 100 },
@@ -33,6 +35,7 @@ const Price = () => {
       popular: true,
     },
     {
+      id: "pro",
       name: "Pro",
       price: { monthly: "Br 20", yearly: "Br 180" },
       priceValue: { monthly: 20, yearly: 180 },
@@ -59,7 +62,8 @@ const Price = () => {
       return;
     }
 
-    setLoading(true)
+    // Set loading for this specific plan
+    setLoadingPlan(plan.id)
 
     try {
       // Call backend to initialize payment
@@ -90,7 +94,8 @@ const Price = () => {
       console.error('Payment error:', error)
       toast.error(error.message || "Something went wrong. Please try again.")
     } finally {
-      setLoading(false)
+      // Clear loading for this plan
+      setLoadingPlan(null)
     }
   }
 
@@ -134,7 +139,7 @@ const Price = () => {
         <div className="grid gap-6 md:grid-cols-3 w-full max-w-6xl">
           {plans.map((plan) => (
             <Card
-              key={plan.name}
+              key={plan.id}
               className={`flex flex-col justify-between border-2 ${
                 plan.popular ? "border-blue-500 shadow-lg" : "border-gray-200"
               }`}
@@ -165,9 +170,18 @@ const Price = () => {
                     plan.popular ? "bg-blue-500 hover:bg-blue-600" : ""
                   }`}
                   onClick={() => handleSubscribe(plan)}
-                  disabled={loading}
+                  disabled={loadingPlan === plan.id}
                 >
-                  {loading ? "Processing..." : plan.name === "Free" ? "Get Started" : "Subscribe"}
+                  {loadingPlan === plan.id ? (
+                    <>
+                      <span className="animate-spin mr-2">⟳</span>
+                      Processing...
+                    </>
+                  ) : plan.name === "Free" ? (
+                    "Get Started"
+                  ) : (
+                    "Subscribe"
+                  )}
                 </Button>
               </CardContent>
             </Card>
