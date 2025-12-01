@@ -21,7 +21,7 @@ import privacyRoutes from "./routes/privacyRoutes.js";
 import securityRoutes from "./routes/securityRoutes.js";
 import dataRoutes from "./routes/dataRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
-// import webSocketManager from "./websocket.js";
+import webSocketManager from "./websocket.js";
 
 dotenv.config();
 
@@ -50,7 +50,7 @@ app.use(express.urlencoded({ extended: true })); // Add this for form data
 const server = http.createServer(app);
 
 // Initialize WebSocket with the HTTP server
-// webSocketManager.initialize(server);
+webSocketManager.initialize(server);
 
 // Routes
 app.use("/uploads", express.static("uploads"));

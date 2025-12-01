@@ -21,11 +21,11 @@ const useWebSocket = () => {
         socketRef.current.close();
       }
 
-      console.log('Attempting to connect to WebSocket...');
+      // console.log('Attempting to connect to WebSocket...');
       socketRef.current = new WebSocket('ws://localhost:5000/ws');
 
       socketRef.current.onopen = () => {
-        console.log('WebSocket connected');
+        // console.log('WebSocket connected');
         reconnectAttemptsRef.current = 0;
         
         // Authenticate the WebSocket connection
@@ -51,8 +51,8 @@ const useWebSocket = () => {
         }
       };
 
-      socketRef.current.onclose = (event) => {
-        console.log('WebSocket disconnected:', event.code, event.reason);
+      socketRef.current.onclose = () => {
+        // console.log('WebSocket disconnected:', event.code, event.reason);
         
         // Attempt to reconnect
         if (reconnectAttemptsRef.current < maxReconnectAttempts) {
