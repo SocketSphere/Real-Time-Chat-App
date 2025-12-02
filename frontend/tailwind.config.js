@@ -10,6 +10,7 @@ export default {
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  darkMode: "class", // This is the key change - only use 'class'
   theme: {
   	extend: {
   		borderRadius: {
@@ -57,23 +58,21 @@ export default {
   				'3': 'hsl(var(--chart-3))',
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
-  			},
-  			sidebar: {
-  				DEFAULT: 'hsl(var(--sidebar-background))',
-  				foreground: 'hsl(var(--sidebar-foreground))',
-  				primary: 'hsl(var(--sidebar-primary))',
-  				'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
-  				accent: 'hsl(var(--sidebar-accent))',
-  				'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
-  				border: 'hsl(var(--sidebar-border))',
-  				ring: 'hsl(var(--sidebar-ring))'
   			}
   		}
   	}
   },
-  darkMode: ["class", "class"],
   plugins: [daisyui, tailwindcssAnimate],
   daisyui: {
-    themes: ["forest", "dark", "light"],
+    themes: false, // Disable DaisyUI themes entirely
+    // OR if you want to keep DaisyUI but without theme switching:
+    // themes: ["light"], // Only use light theme
+    darkTheme: "dark", // This will be ignored since we're disabling themes
+    base: true,
+    styled: true,
+    utils: true,
+    prefix: "",
+    logs: true,
+    themeRoot: ":root",
   },
 };

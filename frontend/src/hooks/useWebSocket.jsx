@@ -24,11 +24,11 @@ const useWebSocket = () => {
         socketRef.current.close();
       }
 
-      console.log('🔌 Attempting to connect to WebSocket...');
+      // console.log('🔌 Attempting to connect to WebSocket...');
       socketRef.current = new WebSocket('ws://localhost:5000/ws');
 
       socketRef.current.onopen = () => {
-        console.log('✅ WebSocket connected');
+        // console.log('✅ WebSocket connected');
         reconnectAttemptsRef.current = 0;
         
         // Authenticate the WebSocket connection
@@ -41,16 +41,16 @@ const useWebSocket = () => {
       socketRef.current.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
-          console.log('📥 WebSocket message received:', data.type);
+          // console.log('📥 WebSocket message received:', data.type);
           
           if (data.type === 'new_notification') {
             // Increment the notification count
             dispatch(incrementNotificationCount());
           } else if (data.type === 'pong') {
-            console.log('🏓 Received pong');
+            // console.log('🏓 Received pong');
           } else if (data.type === 'new_message') {
             // 🔥 Handle chat messages - broadcast to all handlers
-            console.log('💬 Chat message received:', data.data.content);
+            // console.log('💬 Chat message received:', data.data.content);
             
             // Call all registered message handlers
             messageHandlersRef.current.forEach((handler) => {
@@ -62,7 +62,7 @@ const useWebSocket = () => {
             });
           } else if (data.type === 'user_typing') {
             // 🔥 Handle typing indicators
-            console.log('⌨️ Typing indicator:', data.data);
+            // console.log('⌨️ Typing indicator:', data.data);
             
             // Broadcast typing events
             const typingEvent = new CustomEvent('websocket:typing', {
@@ -82,7 +82,7 @@ const useWebSocket = () => {
         if (reconnectAttemptsRef.current < maxReconnectAttempts) {
           reconnectAttemptsRef.current++;
           const timeout = Math.pow(2, reconnectAttemptsRef.current) * 1000; // Exponential backoff
-          console.log(`Attempting to reconnect in ${timeout / 1000} seconds... (Attempt ${reconnectAttemptsRef.current})`);
+          // console.log(`Attempting to reconnect in ${timeout / 1000} seconds... (Attempt ${reconnectAttemptsRef.current})`);
           
           reconnectTimeoutRef.current = setTimeout(() => {
             connect();
@@ -142,12 +142,12 @@ const useWebSocket = () => {
   // Register a message handler
   const onMessage = useCallback((handlerId, handler) => {
     messageHandlersRef.current.set(handlerId, handler);
-    console.log(`📝 Registered message handler: ${handlerId}`);
+    // console.log(`📝 Registered message handler: ${handlerId}`);
     
     // Return cleanup function
     return () => {
       messageHandlersRef.current.delete(handlerId);
-      console.log(`🗑️ Removed message handler: ${handlerId}`);
+      // console.log(`🗑️ Removed message handler: ${handlerId}`);
     };
   }, []);
 
@@ -156,15 +156,15 @@ const useWebSocket = () => {
     if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
       try {
         const jsonData = JSON.stringify(data);
-        console.log('📤 Sending via WebSocket:', data.type);
+        // console.log('📤 Sending via WebSocket:', data.type);
         socketRef.current.send(jsonData);
         return true;
-      } catch (error) {
-        console.error('Error sending WebSocket message:', error);
+      } catch {
+        // console.error('Error sending WebSocket message:', error);
         return false;
       }
     } else {
-      console.log('⚠️ WebSocket not connected, cannot send');
+      // console.log('⚠️ WebSocket not connected, cannot send');
       return false;
     }
   }, []);

@@ -2,12 +2,12 @@ import React from "react";
 
 const Subscribe = () => {
   return (
-    <section className="w-full bg-gradient-to-r from-indigo-700 via-purple-700 to-fuchsia-700 py-24 px-6 text-center text-white mt-12 rounded-3xl shadow-xl">
+    <section className="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 dark:from-blue-700 dark:via-purple-700 dark:to-indigo-700 py-24 px-6 text-center text-white mt-12 rounded-3xl shadow-xl dark:shadow-gray-900 transition-colors duration-500">
       <div className="max-w-3xl mx-auto">
         <h2 className="text-4xl md:text-5xl font-bold mb-6">
           Stay Updated With ChatMaster
         </h2>
-        <p className="text-lg md:text-xl text-gray-200 mb-12">
+        <p className="text-lg md:text-xl text-blue-100 dark:text-blue-200 mb-12">
           Join our newsletter and be the first to know about new features,
           updates, and exclusive offers.
         </p>
@@ -20,12 +20,12 @@ const Subscribe = () => {
             id="email"
             type="email"
             placeholder="Enter your email"
-            className="w-full sm:w-2/3 px-6 py-4 rounded-2xl text-gray-800 text-lg focus:outline-none focus:ring-4 focus:ring-yellow-400 shadow-lg"
+            className="w-full sm:w-2/3 px-6 py-4 rounded-2xl text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 text-lg focus:outline-none focus:ring-4 focus:ring-cyan-400 dark:focus:ring-cyan-500 focus:border-transparent shadow-lg transition-colors duration-300 placeholder-gray-500 dark:placeholder-gray-400"
             required
           />
           <button
             type="submit"
-            className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-semibold px-10 py-4 rounded-2xl text-lg shadow-lg transition duration-300 hover:scale-105"
+            className="bg-cyan-400 dark:bg-cyan-500 hover:bg-cyan-500 dark:hover:bg-cyan-600 text-gray-900 dark:text-gray-900 font-semibold px-10 py-4 rounded-2xl text-lg shadow-lg transition-all duration-300 hover:scale-105"
           >
             Subscribe
           </button>

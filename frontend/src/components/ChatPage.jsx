@@ -1,4 +1,3 @@
-// frontend/src/components/ChatPage.jsx - WITHOUT STATUS PANEL
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -244,7 +243,7 @@ const ChatPage = () => {
   // Show loading while auth is being determined
   if (!isLogin) {
     return (
-      <div className="p-6 text-center">
+      <div className="p-6 text-center dark:text-gray-300">
         <p>You need to be logged in to chat.</p>
         <p>Redirecting to login page...</p>
       </div>
@@ -253,28 +252,28 @@ const ChatPage = () => {
 
   if (!friend) {
     return (
-      <div className="p-6 text-center">
-        <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      <div className="p-6 text-center dark:text-gray-300">
+        <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 dark:border-blue-400"></div>
         <p className="mt-2">Loading chat...</p>
       </div>
     );
   }
   
   return (
-    <div className="p-6 max-w-4xl mx-auto">
+    <div className="p-6 max-w-4xl mx-auto dark:bg-gray-900 min-h-screen transition-colors duration-300">
       {/* Header with name + actions */}
-      <div className="flex justify-between items-center mb-6 bg-white p-4 rounded-lg shadow">
+      <div className="flex justify-between items-center mb-6 bg-white dark:bg-gray-800 p-4 rounded-lg shadow dark:shadow-gray-900 transition-colors duration-300">
         <div className="flex items-center space-x-4">
-          <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-xl">
+          <div className="w-12 h-12 bg-blue-500 dark:bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-xl">
             {friend.firstName?.[0]}{friend.lastName?.[0]}
           </div>
           <div>
-            <h2 className="text-2xl font-bold">
+            <h2 className="text-2xl font-bold dark:text-gray-100">
               {friend.firstName} {friend.lastName}
             </h2>
             <div className="flex items-center space-x-2">
-              <div className={`w-2 h-2 rounded-full ${friend.isOnline ? 'bg-green-500' : 'bg-gray-400'}`}></div>
-              <p className="text-sm text-gray-600">
+              <div className={`w-2 h-2 rounded-full ${friend.isOnline ? 'bg-green-500' : 'bg-gray-400 dark:bg-gray-600'}`}></div>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
                 {friend.isOnline ? 'Online' : 'Offline'}
                 {friendTyping && " • Typing..."}
                 {!isConnected && " • Connecting..."}
@@ -285,21 +284,21 @@ const ChatPage = () => {
         <div className="flex gap-4">
           <button
             onClick={() => alert(`Calling ${friend.firstName}...`)}
-            className="p-2 rounded-full bg-green-100 text-green-600 hover:bg-green-200 transition-colors"
+            className="p-2 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-800/50 transition-colors duration-200"
             title="Call"
           >
             <Phone size={20} />
           </button>
           <button
             onClick={() => alert(`Video calling ${friend.firstName}...`)}
-            className="p-2 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors"
+            className="p-2 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-800/50 transition-colors duration-200"
             title="Video Call"
           >
             <Video size={20} />
           </button>
           <button
             onClick={handleDeleteContact}
-            className="p-2 rounded-full bg-red-100 text-red-600 hover:bg-red-200 transition-colors"
+            className="p-2 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-800/50 transition-colors duration-200"
             title="Delete Contact"
           >
             <Trash2 size={20} />
@@ -310,13 +309,13 @@ const ChatPage = () => {
       {/* Chat Box */}
       <div 
         ref={chatBoxRef} 
-        className="border rounded-lg p-4 h-[500px] overflow-y-auto bg-gray-50 mb-4 shadow-inner"
+        className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 h-[500px] overflow-y-auto bg-gray-50 dark:bg-gray-800/50 mb-4 shadow-inner transition-colors duration-300"
       >
         {messages.length === 0 ? (
-          <div className="h-full flex flex-col items-center justify-center text-gray-400">
+          <div className="h-full flex flex-col items-center justify-center text-gray-400 dark:text-gray-500">
             <div className="text-6xl mb-4">👋</div>
-            <p className="text-lg">No messages yet</p>
-            <p className="text-sm">Start a conversation with {friend.firstName}!</p>
+            <p className="text-lg dark:text-gray-300">No messages yet</p>
+            <p className="text-sm dark:text-gray-400">Start a conversation with {friend.firstName}!</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -326,15 +325,15 @@ const ChatPage = () => {
                 className={`flex ${m.sender?._id === userId ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-xs lg:max-w-md p-3 rounded-2xl ${
+                  className={`max-w-xs lg:max-w-md p-3 rounded-2xl transition-all duration-200 ${
                     m.sender?._id === userId
-                      ? "bg-blue-600 text-white rounded-br-none"
-                      : "bg-white text-gray-800 rounded-bl-none border"
+                      ? "bg-blue-600 dark:bg-blue-700 text-white rounded-br-none shadow-md"
+                      : "bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-bl-none border border-gray-200 dark:border-gray-600"
                   }`}
                 >
                   <p className="break-words">{m.content}</p>
                   <div className={`flex justify-between items-center mt-1 ${
-                    m.sender?._id === userId ? 'text-blue-200' : 'text-gray-500'
+                    m.sender?._id === userId ? 'text-blue-200 dark:text-blue-300' : 'text-gray-500 dark:text-gray-400'
                   }`}>
                     <span className="text-xs">
                       {new Date(m.createdAt).toLocaleTimeString([], {
@@ -353,11 +352,11 @@ const ChatPage = () => {
             ))}
             {friendTyping && (
               <div className="flex justify-start">
-                <div className="bg-white border rounded-2xl rounded-bl-none p-3">
+                <div className="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-2xl rounded-bl-none p-3">
                   <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                    <div className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                    <div className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
                   </div>
                 </div>
               </div>
@@ -367,7 +366,7 @@ const ChatPage = () => {
       </div>
 
       {/* Message Input */}
-      <div className="flex items-center space-x-2 bg-white p-2 rounded-lg shadow">
+      <div className="flex items-center space-x-2 bg-white dark:bg-gray-800 p-2 rounded-lg shadow dark:shadow-gray-900 transition-colors duration-300">
         <div className="flex-1">
           <input
             type="text"
@@ -375,16 +374,16 @@ const ChatPage = () => {
             value={message}
             onChange={handleMessageChange}
             onKeyPress={handleKeyPress}
-            className="w-full px-4 py-3 rounded-lg border bg-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-600 bg-slate-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-colors duration-300 placeholder-gray-500 dark:placeholder-gray-400"
           />
         </div>
         <button
           onClick={handleSendMessage}
           disabled={!message.trim()}
-          className={`px-6 py-3 rounded-lg font-medium transition-all ${
+          className={`px-6 py-3 rounded-lg font-medium transition-all duration-300 ${
             message.trim() 
-              ? "bg-blue-600 text-white hover:bg-blue-700 shadow-md" 
-              : "bg-gray-200 text-gray-400 cursor-not-allowed"
+              ? "bg-blue-600 dark:bg-blue-700 text-white hover:bg-blue-700 dark:hover:bg-blue-600 shadow-md" 
+              : "bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
           }`}
         >
           Send
@@ -394,7 +393,7 @@ const ChatPage = () => {
       {/* Minimal Connection Status (optional - can be removed) */}
       {!isConnected && (
         <div className="mt-2 text-center">
-          <p className="text-xs text-yellow-600">
+          <p className="text-xs text-yellow-600 dark:text-yellow-500">
             Connecting to real-time chat...
           </p>
         </div>

@@ -24,47 +24,53 @@ import useNotificationCount from './hooks/useNotificationCount';
 import useWebSocket from './hooks/useWebSocket';
 import PaymentSuccess from './pages/PaymentSuccess';
 import PaymentFailed from './pages/PaymentFailed';
+import { ThemeProvider } from "./components/theme-provider";
+
 function App() {
   useNotificationCount();
   useWebSocket();
   return (
-   <div>
-    <Toaster
-        position="top-center"
-        reverseOrder={false}
-      />
-     <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/chat" element={<Chat/>}/>
-        <Route path="/notfound" element={<NotFound/>}/>
-        <Route path="/signup" element={<SignUp/>}/>
-        <Route path="/login" element={<Login/>}/>
-        <Route path="/price" element={<Price/>}/>
-        <Route path="/about-us" element={<AboutUs/>}/>
-        <Route path="/profile" element={<Profile/>}/>
-        <Route path="/settings" element={<Setting/>}/>
-        <Route path="/payment-success" element={<PaymentSuccess />} />
-        <Route path="/payment-failed" element={<PaymentFailed />} />
-        
-        
-        <Route path="*" element={<NotFound/>}/>
+
+    <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+      <div>
+      <Toaster
+          position="top-center"
+          reverseOrder={false}
+        />
+      <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/chat" element={<Chat/>}/>
+          <Route path="/notfound" element={<NotFound/>}/>
+          <Route path="/signup" element={<SignUp/>}/>
+          <Route path="/login" element={<Login/>}/>
+          <Route path="/price" element={<Price/>}/>
+          <Route path="/about-us" element={<AboutUs/>}/>
+          <Route path="/profile" element={<Profile/>}/>
+          <Route path="/settings" element={<Setting/>}/>
+          <Route path="/payment-success" element={<PaymentSuccess />} />
+          <Route path="/payment-failed" element={<PaymentFailed />} />
+          
+          
+          <Route path="*" element={<NotFound/>}/>
 
 
-        <Route element={<DashboardLayout/>}>
-           {/* <Route path="/inbox" element={<Inbox/>}/> */}
-           <Route path="/calendar" element={<Calendar/>}/>
-           <Route path="/files" element={<Files/>}/>
-           <Route path="/search" element={<Search/>}/>
-           <Route path="/contact" element={<Contact/>}/>
-            <Route path="/chat/:friendId" element={<ChatPage />} />
-           <Route path="/group/:groupId" element={<GroupChatPage />} />
-           <Route path="/group" element={<Group/>}/>
-           <Route path="/contact" element={<Contact/>}/>
-           <Route path="/notifications" element={<Notifications/>}/>
-        </Route>
-       
-     </Routes>
-   </div>
+          <Route element={<DashboardLayout/>}>
+            {/* <Route path="/inbox" element={<Inbox/>}/> */}
+            <Route path="/calendar" element={<Calendar/>}/>
+            <Route path="/files" element={<Files/>}/>
+            <Route path="/search" element={<Search/>}/>
+            <Route path="/contact" element={<Contact/>}/>
+              <Route path="/chat/:friendId" element={<ChatPage />} />
+            <Route path="/group/:groupId" element={<GroupChatPage />} />
+            <Route path="/group" element={<Group/>}/>
+            <Route path="/contact" element={<Contact/>}/>
+            <Route path="/notifications" element={<Notifications/>}/>
+          </Route>
+        
+      </Routes>
+    </div>
+    </ThemeProvider>
+   
   )
 }
 

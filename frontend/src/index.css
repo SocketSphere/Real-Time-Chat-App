@@ -2,6 +2,28 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Add these base styles for dark mode */
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+  }
+}
+
+/* Apply the background and text colors to body */
+@layer base {
+  body {
+    @apply bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+}
+
+/* Rest of your existing CSS */
 @keyframes scroll {
   0% {
     transform: translateX(0%);
@@ -16,6 +38,18 @@
   animation-direction: var(--animation-direction, forwards);
 }
 
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
 
 
 @layer base {
@@ -87,4 +121,19 @@
 
 html {
   scroll-behavior: smooth;
+}
+
+
+/* Force dark mode classes to win */
+.dark {
+  color-scheme: dark;
+}
+
+.light {
+  color-scheme: light;
+}
+
+/* Remove any DaisyUI theme data attributes if causing issues */
+html[data-theme] {
+  color-scheme: unset;
 }

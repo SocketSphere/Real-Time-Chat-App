@@ -8,17 +8,17 @@ const Order = () => {
         <img
           src="/s4.png"
           alt="Direct orders illustration"
-          className="w-full max-w-md h-auto rounded-xl shadow-lg"
+          className="w-full max-w-md h-auto rounded-xl shadow-lg dark:shadow-gray-900"
         />
       </div>
 
       {/* Text Section */}
       <div className="max-w-xl">
-        <h2 className="text-3xl md:text-4xl font-bold text-gray-800 leading-snug mb-4">
+        <h2 className="text-3xl md:text-4xl font-bold text-gray-800 dark:text-gray-100 leading-snug mb-4 transition-colors duration-300">
           Receive Direct Orders <br />
           From Your Customers
         </h2>
-        <p className="text-gray-600 mb-8">
+        <p className="text-gray-600 dark:text-gray-300 mb-8 transition-colors duration-300">
           Streamline your sales process by connecting with customers directly through
           real-time chat. Respond instantly, manage orders efficiently, and boost your business growth.
         </p>
@@ -26,12 +26,12 @@ const Order = () => {
         {/* Stats Section */}
         <div className="grid grid-cols-2 gap-8">
           <div>
-            <h3 className="text-3xl font-extrabold text-orange-500">4.3K+</h3>
-            <p className="text-gray-600">Active Websites Powered</p>
+            <h3 className="text-3xl font-extrabold text-orange-500 dark:text-orange-400">4.3K+</h3>
+            <p className="text-gray-600 dark:text-gray-400">Active Websites Powered</p>
           </div>
           <div>
-            <h3 className="text-3xl font-extrabold text-orange-500">7M+</h3>
-            <p className="text-gray-600">Chats Processed in 2025</p>
+            <h3 className="text-3xl font-extrabold text-orange-500 dark:text-orange-400">7M+</h3>
+            <p className="text-gray-600 dark:text-gray-400">Chats Processed in 2025</p>
           </div>
         </div>
       </div>
