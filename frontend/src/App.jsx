@@ -16,7 +16,7 @@ import Profile from "@/components/(Profile)/Profile"
 import Login from "./components/(profile)/Login"
 import Notifications from "./components/AppSidebar/Notifications"
 import Price from "./components/(Navbar)/Price"
-import Setting from "./components/settings/Setting"
+import Setting from "./components/Settings/Setting"
 import { Toaster } from "react-hot-toast";
 import ChatPage from "./components/ChatPage"
 import GroupChatPage from "./components/GroupChatPage"
