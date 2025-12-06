@@ -3,6 +3,7 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { User, Search as SearchIcon, Users, Loader2, UserPlus, LogIn } from "lucide-react";
+import { API_URL } from "../../config.js";  // Add this import
 
 const Search = () => {
   const { user, isLogin, token } = useSelector((state) => state.auth);
@@ -21,7 +22,7 @@ const Search = () => {
     setSearchPerformed(true);
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/search?query=${encodeURIComponent(query)}`,
+        `${API_URL}/api/search?query=${encodeURIComponent(query)}`,
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -61,7 +62,7 @@ const Search = () => {
     try {
       if (item.type === "contact") {
         // Add to Contact
-        await axios.post("http://localhost:5000/api/contacts/add", {
+        await axios.post(`${API_URL}/api/contacts/add`, {
           userId,
           friendId: item._id,
         }, {
@@ -73,7 +74,7 @@ const Search = () => {
         window.dispatchEvent(new Event("contactsUpdated"));
       } else if (item.type === "group") {
         // Join Group
-        await axios.post("http://localhost:5000/api/groups/join", {
+        await axios.post(`${API_URL}/api/groups/join`, {
           groupId: item._id,
           userId,
         }, {

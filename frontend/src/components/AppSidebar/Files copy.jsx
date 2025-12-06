@@ -7,6 +7,7 @@ import {
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
+import { API_URL } from "../../config.js";  // Add this import
 
 const Files = () => {
   const [files, setFiles] = useState([]);
@@ -26,7 +27,7 @@ const Files = () => {
     
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:5000/api/files?userId=${userId}&folderId=${currentFolder || ''}`);
+      const response = await axios.get(`${API_URL}/api/files?userId=${userId}&folderId=${currentFolder || ''}`);
       setFiles(response.data.files || []);
       setFolders(response.data.folders || []);
     } catch (err) {
@@ -48,7 +49,7 @@ const Files = () => {
     if (currentFolder) formData.append('folderId', currentFolder);
 
     try {
-      await axios.post('http://localhost:5000/api/files/upload', formData, {
+      await axios.post(`${API_URL}/api/files/upload`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       fetchFiles();
@@ -66,7 +67,7 @@ const Files = () => {
     if (!folderName.trim()) return;
 
     try {
-      await axios.post('http://localhost:5000/api/files/folder', {
+      await axios.post(`${API_URL}/api/files/folder`, {
         name: folderName,
         userId,
         parentFolder: currentFolder
@@ -81,7 +82,7 @@ const Files = () => {
   // Download file
   const downloadFile = async (fileId, fileName) => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/files/download/${fileId}`, {
+      const response = await axios.get(`${API_URL}/api/files/download/${fileId}`, {
         responseType: 'blob'
       });
       
@@ -103,7 +104,7 @@ const Files = () => {
     if (!window.confirm(`Are you sure you want to delete this ${type}?`)) return;
 
     try {
-      await axios.delete(`http://localhost:5000/api/files/${id}?type=${type}`);
+      await axios.delete(`${API_URL}/api/files/${id}?type=${type}`);
       fetchFiles();
     } catch (err) {
       console.error('Delete failed:', err);

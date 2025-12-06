@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+ import { API_URL } from "../../config.js";  // Add this import
 
 const SecuritySettings = ({ security, setSecurity, userId }) => {
   const [loading, setLoading] = useState(false);
@@ -9,7 +10,7 @@ const SecuritySettings = ({ security, setSecurity, userId }) => {
     try {
       setLoading(true);
       const newState = !security.twoFactorEnabled;
-      await axios.put(`http://localhost:5000/api/security/${userId}/two-factor`, {
+      await axios.put(`${API_URL}/api/security/${userId}/two-factor`, {
         enabled: newState
       });
       
@@ -29,7 +30,7 @@ const SecuritySettings = ({ security, setSecurity, userId }) => {
 
   const terminateSession = async (sessionId) => {
     try {
-      await axios.delete(`http://localhost:5000/api/security/${userId}/sessions/${sessionId}`);
+      await axios.delete(`${API_URL}/api/security/${userId}/sessions/${sessionId}`);
       setSecurity(prev => ({
         ...prev,
         activeSessions: prev.activeSessions.filter(session => session.id !== sessionId)

@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { useSelector } from "react-redux"
 import toast from "react-hot-toast"
 import { Loader2 } from "lucide-react"
+import { API_URL } from "../../config.js";  // Add this import
 
 const Price = () => {
   const [billingCycle, setBillingCycle] = useState("monthly")
@@ -67,7 +68,7 @@ const Price = () => {
 
     try {
       // Call backend to initialize payment
-      const response = await fetch('http://localhost:5000/api/payments/initialize', {
+      const response = await fetch(`${API_URL}/api/payments/initialize`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

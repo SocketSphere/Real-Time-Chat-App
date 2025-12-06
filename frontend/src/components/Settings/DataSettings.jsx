@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Download, Trash2 } from 'lucide-react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { API_URL } from "../../config.js";  // Add this import
 
 const DataSettings = ({ userId }) => {
   const [loading, setLoading] = useState(false);
@@ -9,7 +10,7 @@ const DataSettings = ({ userId }) => {
   const exportData = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`http://localhost:5000/api/data/${userId}/export`, {
+      const response = await axios.get(`${API_URL}/api/data/${userId}/export`, {
         responseType: 'blob'
       });
       
@@ -36,7 +37,7 @@ const DataSettings = ({ userId }) => {
     }
     try {
       setLoading(true);
-      await axios.delete(`http://localhost:5000/api/data/${userId}/clear`);
+      await axios.delete(`${API_URL}/api/data/${userId}/clear`);
       toast.success('All data cleared successfully');
     } catch (error) {
       console.error('Error clearing data:', error);

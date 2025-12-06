@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import useWebSocket from "../hooks/useWebSocket.jsx";
 import { Users, Send, Loader2 } from "lucide-react";
+ import { API_URL } from "../config.js";  // Add this import
 
 const GroupChatPage = () => {
   const { groupId } = useParams();
@@ -48,7 +49,7 @@ const GroupChatPage = () => {
   // Fetch group details
   const fetchGroup = useCallback(async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/groups/${groupId}`, {
+      const res = await axios.get(`${API_URL}/api/groups/${groupId}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -63,7 +64,7 @@ const GroupChatPage = () => {
   // Fetch messages
   const fetchMessages = useCallback(async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/messages`, {
+      const res = await axios.get(`${API_URL}/api/messages`, {
         params: { groupId },
         headers: {
           Authorization: `Bearer ${token}`
@@ -145,7 +146,7 @@ const GroupChatPage = () => {
 
     // Send to backend
     try {
-      const response = await axios.post("http://localhost:5000/api/messages", {
+      const response = await axios.post(`${API_URL}/api/messages`, {
         sender: userId,
         group: groupId,
         content: message,

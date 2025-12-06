@@ -4,6 +4,7 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+ import { API_URL } from "../config.js";  // Add this import
 
 const Group = () => {
   const [groups, setGroups] = useState([]);
@@ -19,7 +20,7 @@ const Group = () => {
   // Fetch all groups and filter joined groups
   const fetchGroups = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/groups", {
+      const res = await axios.get(`${API_URL}/api/groups`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -67,7 +68,7 @@ const Group = () => {
     }
     
     try {
-      const res = await axios.post("http://localhost:5000/api/groups/join", {
+      const res = await axios.post(`${API_URL}/api/groups/join`, {
         groupId,
         userId,
       }, {
@@ -108,7 +109,7 @@ const Group = () => {
     }
     
     try {
-      await axios.delete(`http://localhost:5000/api/groups/delete`, {
+      await axios.delete(`${API_URL}/api/groups/delete`, {
         data: { groupId, userId },
         headers: {
           Authorization: `Bearer ${token}`
@@ -130,7 +131,7 @@ const Group = () => {
   // Leave a group
   const handleLeaveGroup = async (groupId) => {
     try {
-      const res = await axios.post("http://localhost:5000/api/groups/leave", {
+      const res = await axios.post(`${API_URL}/api/groups/leave`, {
         groupId,
         userId,
       }, {
@@ -161,7 +162,7 @@ const Group = () => {
     }
     
     try {
-      const res = await axios.post("http://localhost:5000/api/groups/create", {
+      const res = await axios.post(`${API_URL}/api/groups/create`, {
         name: newGroupName.trim(),
         description: newGroupDescription.trim(),
         owner: userId,

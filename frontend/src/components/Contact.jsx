@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+ import { API_URL } from "../config.js";  // Add this import
 
 const Contact = () => {
   const { user, isLogin, token } = useSelector((state) => state.auth);
@@ -18,7 +19,7 @@ const Contact = () => {
   const fetchMyContacts = async () => {
     if (!isLogin || !userId) return;
     try {
-      const res = await axios.get(`http://localhost:5000/api/contacts/${userId}`, {
+      const res = await axios.get(`${API_URL}/api/contacts/${userId}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -37,7 +38,7 @@ const Contact = () => {
   const fetchRecommended = async () => {
     if (!isLogin || !userId) return;
     try {
-      const res = await axios.get("http://localhost:5000/api/users", {
+      const res = await axios.get(`${API_URL}/api/users`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -60,7 +61,7 @@ const Contact = () => {
     if (!window.confirm("Are you sure you want to delete this contact?")) return;
     
     try {
-      await axios.delete(`http://localhost:5000/api/contacts/delete`, {
+      await axios.delete(`${API_URL}/api/contacts/delete`, {
         data: { userId, friendId },
         headers: {
           Authorization: `Bearer ${token}`
@@ -77,7 +78,7 @@ const Contact = () => {
   // Add contact
   const handleAddContact = async (friendId) => {
     try {
-      await axios.post("http://localhost:5000/api/contacts/add", 
+      await axios.post(`${API_URL}/api/contacts/add`, 
         { userId, friendId },
         {
           headers: {

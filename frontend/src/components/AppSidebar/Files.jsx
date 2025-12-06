@@ -8,6 +8,7 @@ import {
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
+import { API_URL } from "../../config.js";  // Add this import
 
 const Files = () => {
   const [files, setFiles] = useState([]);
@@ -30,7 +31,7 @@ const Files = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/files?userId=${userId}&folderId=${currentFolder || ''}`,
+        `${API_URL}/api/files?userId=${userId}&folderId=${currentFolder || ''}`,
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -66,7 +67,7 @@ const Files = () => {
     if (currentFolder) formData.append('folderId', currentFolder);
 
     try {
-      await axios.post('http://localhost:5000/api/files/upload', formData, {
+      await axios.post(`${API_URL}/api/files/upload`, formData, {
         headers: { 
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`
@@ -91,7 +92,7 @@ const Files = () => {
     }
 
     try {
-      await axios.post('http://localhost:5000/api/files/folder', {
+      await axios.post(`${API_URL}/api/files/folder`, {
         name: newFolderName,
         userId,
         parentFolder: currentFolder
@@ -114,7 +115,7 @@ const Files = () => {
   const downloadFile = async (fileId, fileName) => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/files/download/${fileId}`,
+        `${API_URL}/api/files/download/${fileId}`,
         {
           responseType: 'blob',
           headers: {
@@ -142,7 +143,7 @@ const Files = () => {
     if (!window.confirm(`Are you sure you want to delete this ${type}?`)) return;
 
     try {
-      await axios.delete(`http://localhost:5000/api/files/${id}?type=${type}&userId=${userId}`, {
+      await axios.delete(`${API_URL}/api/files/${id}?type=${type}&userId=${userId}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

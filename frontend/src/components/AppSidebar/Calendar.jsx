@@ -16,6 +16,7 @@ import {
 import axios from "axios";
 import { useSelector } from "react-redux";
 import toast from "react-hot-toast";
+import { API_URL } from "../../config.js";  // Add this import
 
 const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -47,7 +48,7 @@ const Calendar = () => {
       const year = currentDate.getFullYear();
       const month = currentDate.getMonth() + 1;
       const response = await axios.get(
-        `http://localhost:5000/api/calendar/month/${year}/${month}?userId=${userId}`,
+        `${API_URL}/api/calendar/month/${year}/${month}?userId=${userId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -70,7 +71,7 @@ const Calendar = () => {
   // Create new event
   const createEvent = async (eventData) => {
     try {
-      const response = await axios.post("http://localhost:5000/api/calendar", {
+      const response = await axios.post(`${API_URL}/api/calendar`, {
         ...eventData,
         createdBy: userId,
       }, {
@@ -89,7 +90,7 @@ const Calendar = () => {
   const updateEvent = async (eventId, updates) => {
     try {
       const response = await axios.put(
-        `http://localhost:5000/api/calendar/${eventId}`,
+        `${API_URL}/api/calendar/${eventId}`,
         updates,
         {
           headers: {
@@ -107,7 +108,7 @@ const Calendar = () => {
   // Delete event
   const deleteEvent = async (eventId) => {
     try {
-      await axios.delete(`http://localhost:5000/api/calendar/${eventId}?userId=${userId}`, {
+      await axios.delete(`${API_URL}/api/calendar/${eventId}?userId=${userId}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

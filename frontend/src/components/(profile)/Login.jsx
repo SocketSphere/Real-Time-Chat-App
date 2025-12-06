@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { login } from "../../redux/authSlice.js";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { API_URL } from "../../config.js";  // Add this import
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -22,7 +23,9 @@ const Login = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/auth/login",
+        // "http://localhost:5000/api/auth/login",
+        `${API_URL}/api/auth/login`,
+
         formData
       );
 

@@ -3,6 +3,7 @@ import { useEffect, useRef, useCallback, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { incrementNotificationCount } from '../redux/notificationSlice.js';
 import { useSelector } from "react-redux";
+import { WS_URL } from '../config.js';  // ← ADD THIS LINE
 
 const useWebSocket = () => {
   const dispatch = useDispatch();
@@ -25,7 +26,9 @@ const useWebSocket = () => {
       }
 
       // console.log('🔌 Attempting to connect to WebSocket...');
-      socketRef.current = new WebSocket('ws://localhost:5000/ws');
+      // socketRef.current = new WebSocket('ws://localhost:5000/ws');
+      socketRef.current = new WebSocket(WS_URL);  // ← CHANGED HERE
+
 
       socketRef.current.onopen = () => {
         // console.log('✅ WebSocket connected');

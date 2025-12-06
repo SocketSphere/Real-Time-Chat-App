@@ -2,7 +2,8 @@
  import axios from "axios";
  import { useSelector, useDispatch } from "react-redux";
  import { updateUser } from "../../redux/authSlice.js"; // Make sure this action updates the user in Redux
- 
+ import { API_URL } from "../../config.js";  // Add this import
+
  const ProfileSettings = () => {
    const dispatch = useDispatch();
    const { user } = useSelector((state) => state.auth);
@@ -21,7 +22,7 @@
    const fetchProfile = async () => {
      if (!userId) return;
      try {
-       const res = await axios.get(`http://localhost:5000/api/users/${userId}`);
+       const res = await axios.get(`${API_URL}/api/users/${userId}`);
        const data = res.data;
  
        setFirstName(data.firstName || "");
@@ -65,7 +66,7 @@
  
      try {
        const res = await axios.put(
-         `http://localhost:5000/api/users/${userId}`,
+         `${API_URL}/api/users/${userId}`,
          formData,
          { headers: { "Content-Type": "multipart/form-data" } }
        );

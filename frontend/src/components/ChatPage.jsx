@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import { Phone, Video, Trash2 } from "lucide-react";
 import useWebSocket from "../hooks/useWebSocket.jsx";
+ import { API_URL } from "../config.js";  // Add this import
 
 const ChatPage = () => {
   const { friendId } = useParams();
@@ -86,7 +87,7 @@ const ChatPage = () => {
     if (!isLogin || !friendId) return;
     
     try {
-      const res = await axios.get(`http://localhost:5000/api/users/${friendId}`, {
+      const res = await axios.get(`${API_URL}/api/users/${friendId}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -107,7 +108,7 @@ const ChatPage = () => {
     if (!userId || !friendId) return;
     
     try {
-      const res = await axios.get(`http://localhost:5000/api/messages`, {
+      const res = await axios.get(`${API_URL}/api/messages`, {
         params: { userId: userId, senderId: friendId },
         headers: {
           Authorization: `Bearer ${token}`
@@ -164,7 +165,7 @@ const ChatPage = () => {
     }
 
     try {
-      const response = await axios.post(`http://localhost:5000/api/messages`, {
+      const response = await axios.post(`${API_URL}/api/messages`, {
         sender: userId,
         receiver: friendId,
         content: message,
@@ -219,7 +220,7 @@ const ChatPage = () => {
   const handleDeleteContact = async () => {
     if (window.confirm("Are you sure you want to delete this contact?")) {
       try {
-        await axios.delete(`http://localhost:5000/api/contacts/delete`, {
+        await axios.delete(`${API_URL}/api/contacts/delete`, {
           data: { userId, friendId },
           headers: {
             Authorization: `Bearer ${token}`

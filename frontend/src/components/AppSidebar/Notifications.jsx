@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { setNotificationCount, decrementNotificationCount } from '../../redux/notificationSlice.js';
 import toast from 'react-hot-toast';
+import { API_URL } from "../../config.js";  // Add this import
 
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
@@ -34,12 +35,12 @@ const Notifications = () => {
     
     try {
       const [notifsRes, countRes] = await Promise.all([
-        axios.get(`http://localhost:5000/api/notifications/${userId}`, {
+        axios.get(`${API_URL}/api/notifications/${userId}`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
         }),
-        axios.get(`http://localhost:5000/api/notifications/${userId}/unread`, {
+        axios.get(`${API_URL}/api/notifications/${userId}/unread`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -62,7 +63,7 @@ const Notifications = () => {
   
   const markAsRead = async (notificationId) => {
     try {
-      await axios.put(`http://localhost:5000/api/notifications/${userId}/read`, {
+      await axios.put(`${API_URL}/api/notifications/${userId}/read`, {
         notificationId
       }, {
         headers: {
@@ -87,7 +88,7 @@ const Notifications = () => {
     if (unreadCount === 0) return;
     
     try {
-      await axios.put(`http://localhost:5000/api/notifications/${userId}/read-all`, {}, {
+      await axios.put(`${API_URL}/api/notifications/${userId}/read-all`, {}, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -105,7 +106,7 @@ const Notifications = () => {
   
   const deleteNotification = async (notificationId) => {
     try {
-      await axios.delete(`http://localhost:5000/api/notifications/${notificationId}`, {
+      await axios.delete(`${API_URL}/api/notifications/${notificationId}`, {
         data: { userId },
         headers: {
           Authorization: `Bearer ${token}`
@@ -137,7 +138,7 @@ const Notifications = () => {
     }
     
     try {
-      await axios.delete(`http://localhost:5000/api/notifications/${userId}/clear`, {
+      await axios.delete(`${API_URL}/api/notifications/${userId}/clear`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

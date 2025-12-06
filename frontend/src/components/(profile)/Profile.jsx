@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { updateUser } from "../../redux/authSlice.js";
 import { Camera, Save, X, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
+import { API_URL } from "../../config.js";  // Add this import
 
 const Profile = () => {
   const dispatch = useDispatch();
@@ -24,7 +25,7 @@ const Profile = () => {
   const fetchProfile = async () => {
     if (!userId) return;
     try {
-      const res = await axios.get(`http://localhost:5000/api/users/${userId}`);
+      const res = await axios.get(`${API_URL}/api/users/${userId}`);
       const data = res.data;
 
       setFirstName(data.firstName || "");
@@ -74,7 +75,7 @@ const Profile = () => {
 
     try {
       const res = await axios.put(
-        `http://localhost:5000/api/users/${userId}`,
+        `${API_URL}/api/users/${userId}`,
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
