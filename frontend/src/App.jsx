@@ -25,7 +25,7 @@ import useWebSocket from './hooks/useWebSocket';
 import PaymentSuccess from './pages/PaymentSuccess';
 import PaymentFailed from './pages/PaymentFailed';
 import { ThemeProvider } from "./components/theme-provider";
-
+import Ai from "./components/ai"
 function App() {
   useNotificationCount();
   useWebSocket();
@@ -49,6 +49,7 @@ function App() {
           <Route path="/settings" element={<Setting/>}/>
           <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/payment-failed" element={<PaymentFailed />} />
+          <Route path="/ai" element={<Ai/>}/>
           
           
           <Route path="*" element={<NotFound/>}/>

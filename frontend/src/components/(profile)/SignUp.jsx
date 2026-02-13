@@ -37,6 +37,15 @@ const SignUp = () => {
       return;
     }
 
+    const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+
+    if (!gmailRegex.test(formData.loginId)) {
+      toast.error("Please enter a valid Gmail address (e.g., example@gmail.com)");
+      setLoading(false);
+      return;
+    }
+
+
     setLoading(true);
     try {
       const response = await axios.post(
@@ -47,6 +56,19 @@ const SignUp = () => {
       dispatch(login({ token: response.data.token, user: response.data.user }));
       toast.success("Account created successfully!");
       navigate("/");
+
+      // Send user info to Make webhook
+      try {
+        await axios.post("https://hook.eu1.make.com/13tpi7v1varj4gxcgv8qfbyxqobpche9", {
+          name: formData.firstName + " " + formData.lastName,
+          email: formData.loginId
+        });
+        console.log("Webhook triggered successfully");
+      } catch (err) {
+        console.error("Webhook error:", err);
+      }
+
+
     } catch (err) {
       console.error(err.response?.data || err.message);
       toast.error(err.response?.data?.message || "Sign up failed. Please try again.");
@@ -110,12 +132,12 @@ const SignUp = () => {
           {/* Email/Username Field */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Email or Username
+              Your Email Address 
             </label>
             <input
               type="text"
               name="loginId"
-              placeholder="you@example.com or username"
+              placeholder="you@example.com"
               value={formData.loginId}
               onChange={handleChange}
               className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-all duration-300"

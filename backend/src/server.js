@@ -1,5 +1,5 @@
-// backend/src/server.js
 import path from "path";
+import { fileURLToPath } from 'url';
 import connectDB from "./config/db.js";
 import express from "express";
 import http from "http";
@@ -23,7 +23,17 @@ import dataRoutes from "./routes/dataRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import webSocketManager from "./websocket.js";
 
-dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load .env from the parent directory (backend folder)
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
+
+// Verify that MONGO_URI is loaded
+console.log('✅ Environment loaded');
+console.log('🔍 MONGO_URI exists:', !!process.env.MONGO_URI);
+console.log('🔍 PORT:', process.env.PORT);
+console.log('🔍 NODE_ENV:', process.env.NODE_ENV);
 
 const app = express();
 

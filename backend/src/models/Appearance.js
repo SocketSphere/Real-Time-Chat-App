@@ -47,6 +47,6 @@ const appearanceSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-appearanceSchema.index({ userId: 1 });
+// appearanceSchema.index({ userId: 1 });
 
 export default mongoose.model("Appearance", appearanceSchema);

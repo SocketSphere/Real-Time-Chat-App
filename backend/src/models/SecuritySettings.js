@@ -28,6 +28,6 @@ const securitySettingsSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-securitySettingsSchema.index({ userId: 1 });
+// securitySettingsSchema.index({ userId: 1 });
 
 export default mongoose.model("SecuritySettings", securitySettingsSchema);

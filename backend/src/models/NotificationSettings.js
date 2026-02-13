@@ -44,6 +44,6 @@ const notificationSettingsSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-notificationSettingsSchema.index({ userId: 1 });
+// notificationSettingsSchema.index({ userId: 1 });
 
 export default mongoose.model("NotificationSettings", notificationSettingsSchema);

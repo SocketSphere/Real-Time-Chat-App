@@ -38,6 +38,6 @@ const privacySettingsSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-privacySettingsSchema.index({ userId: 1 });
+// privacySettingsSchema.index({ userId: 1 });
 
 export default mongoose.model("PrivacySettings", privacySettingsSchema);

@@ -114,13 +114,13 @@ const Navbar = () => {
   const navItems = [
     { name: "Home", path: "/", action: () => handleNavigation() },
     { name: "About Us", path: "/about-us", action: () => handleNavigation() },
-    { name: "Chat", path: "/chat", action: () => handleNavigation() },
+    // { name: "Chat", path: "/chat", action: () => handleNavigation() },
     { name: "Pricing", path: null, action: () => handleScrollToPricing() },
   ];
 
   const moreItems = [
-    { name: "Contact", path: "/contact", action: () => handleNavigation() },
-    { name: "Pricing", path: null, action: () => handleScrollToPricing() },
+    { name: "With Freinds", path: "/chat", action: () => handleNavigation() },
+    { name: "With AI", path: "/ai", action:()=>handleNavigation() },
   ];
 
   return (
@@ -162,7 +162,7 @@ const Navbar = () => {
               className="cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
               onClick={() => setMoreOpen(!moreOpen)}
             >
-              More
+              Chat
             </button>
 
             {moreOpen && (
