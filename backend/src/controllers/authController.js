@@ -86,7 +86,11 @@ export const login = async (req, res) => {
 
 export const verifyEmail = async (req, res) => {
   try {
-    const { token } = req.params;
+    const { token } = req.query;
+
+    if (!token) {
+      return res.send("Invalid verification link");
+    }
 
     const user = await User.findOne({ verificationToken: token });
 
@@ -94,23 +98,21 @@ export const verifyEmail = async (req, res) => {
       return res.send("Invalid or expired link");
     }
 
-    // activate account
     user.isVerified = true;
     user.verificationToken = undefined;
     await user.save();
 
-    // create login token
     const jwtToken = jwt.sign(
       { id: user._id },
       process.env.JWT_SECRET,
       { expiresIn: "2d" }
     );
 
-    // redirect to frontend (THIS IS THE IMPORTANT PART)
     res.redirect(`${process.env.FRONTEND_URL}/auth-success?token=${jwtToken}`);
 
   } catch (err) {
     res.status(500).send("Verification failed");
   }
 };
+
 
