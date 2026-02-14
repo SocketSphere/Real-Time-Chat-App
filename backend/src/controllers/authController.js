@@ -3,6 +3,9 @@
 import User from "../models/User.js"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
+import { sendWelcomeEmail } from "../utils/sendWebhook.js";
+import crypto from "crypto";
+
 
 export const register = async (req, res) => {
   try {
@@ -15,17 +18,34 @@ export const register = async (req, res) => {
 
     const salt = await bcrypt.genSalt(10);
     const hashPassword = await bcrypt.hash(password, salt);
-
-    const user = new User({ firstName, lastName, loginId, password: hashPassword });
+    const verificationToken = crypto.randomBytes(32).toString("hex");
+    const user = new User({
+      firstName,
+      lastName,
+      loginId,
+      password: hashPassword,
+      verificationToken
+    });
     await user.save();
 
-    // Generate JWT for new user
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "2d" });
+    await sendWelcomeEmail(
+      `${firstName} ${lastName}`,
+      loginId,
+      verificationToken
 
+    );
+
+    // Generate JWT for new user
+    // const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "2d" });
+
+    // res.status(201).json({
+    //   token,
+    //   user: { id: user._id, loginId: user.loginId , profileImage: user.profileImage || null, firstName: user.firstName, lastName: user.lastName },
+    // });
     res.status(201).json({
-      token,
-      user: { id: user._id, loginId: user.loginId , profileImage: user.profileImage || null, firstName: user.firstName, lastName: user.lastName },
+      message: "Account created. Please verify your email before logging in."
     });
+
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -36,19 +56,16 @@ export const login = async (req, res) => {
   try {
     const { loginId, password } = req.body;
 
-    // Find user by email or username
     const user = await User.findOne({ loginId });
-    if (!user) {
-      return res.status(404).json({ msg: "User not found" });
-    }
+    if (!user) return res.status(400).json({ msg: "Invalid credentials" });
 
-    // Compare entered password with hashed password
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json({ msg: "Invalid credentials" });
+    if (!isMatch) return res.status(400).json({ msg: "Invalid credentials" });
+
+    if (!user.isVerified) {
+      return res.status(401).json({ msg: "Please verify your email first" });
     }
 
-    // Generate JWT token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "2d" });
 
     res.json({
@@ -65,3 +82,35 @@ export const login = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+
+export const verifyEmail = async (req, res) => {
+  try {
+    const { token } = req.params;
+
+    const user = await User.findOne({ verificationToken: token });
+
+    if (!user) {
+      return res.send("Invalid or expired link");
+    }
+
+    // activate account
+    user.isVerified = true;
+    user.verificationToken = undefined;
+    await user.save();
+
+    // create login token
+    const jwtToken = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: "2d" }
+    );
+
+    // redirect to frontend (THIS IS THE IMPORTANT PART)
+    res.redirect(`${process.env.FRONTEND_URL}/auth-success?token=${jwtToken}`);
+
+  } catch (err) {
+    res.status(500).send("Verification failed");
+  }
+};
+

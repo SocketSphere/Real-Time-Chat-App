@@ -54,19 +54,20 @@ const SignUp = () => {
         formData
       );
       dispatch(login({ token: response.data.token, user: response.data.user }));
-      toast.success("Account created successfully!");
-      navigate("/");
+      toast.success("Account created! Check your email to verify.");
+      navigate("/login");
+
 
       // Send user info to Make webhook
-      try {
-        await axios.post("https://hook.eu1.make.com/13tpi7v1varj4gxcgv8qfbyxqobpche9", {
-          name: formData.firstName + " " + formData.lastName,
-          email: formData.loginId
-        });
-        console.log("Webhook triggered successfully");
-      } catch (err) {
-        console.error("Webhook error:", err);
-      }
+      // try {
+      //   await axios.post("https://hook.eu1.make.com/13tpi7v1varj4gxcgv8qfbyxqobpche9", {
+      //     name: formData.firstName + " " + formData.lastName,
+      //     email: formData.loginId
+      //   });
+      //   console.log("Webhook triggered successfully");
+      // } catch (err) {
+      //   console.error("Webhook error:", err);
+      // }
 
 
     } catch (err) {

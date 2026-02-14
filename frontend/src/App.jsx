@@ -26,6 +26,8 @@ import PaymentSuccess from './pages/PaymentSuccess';
 import PaymentFailed from './pages/PaymentFailed';
 import { ThemeProvider } from "./components/theme-provider";
 import Ai from "./components/ai"
+import AuthSuccess from "./pages/AuthSuccess";
+
 function App() {
   useNotificationCount();
   useWebSocket();
@@ -50,7 +52,8 @@ function App() {
           <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/payment-failed" element={<PaymentFailed />} />
           <Route path="/ai" element={<Ai/>}/>
-          
+          <Route path="/auth-success" element={<AuthSuccess />} />
+
           
           <Route path="*" element={<NotFound/>}/>
 

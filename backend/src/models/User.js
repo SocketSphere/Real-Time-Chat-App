@@ -8,6 +8,13 @@ const userSchema = new mongoose.Schema(
     password:{ type: String, required: true },
     profileImage: { type: String, default: "" },
     bio: { type: String, default: "" },
+    isVerified: {
+      type: Boolean,
+      default: false
+    },
+    verificationToken: {
+      type: String
+    },
     status: { 
       type: String, 
       enum: ["online", "offline", "away"], 
