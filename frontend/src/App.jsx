@@ -40,6 +40,7 @@ function App() {
           reverseOrder={false}
         />
       <Routes>
+          <Route path="/auth-success" element={<AuthSuccess />} />
           <Route path="/" element={<Home />} />
           <Route path="/chat" element={<Chat/>}/>
           <Route path="/notfound" element={<NotFound/>}/>
@@ -52,7 +53,6 @@ function App() {
           <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/payment-failed" element={<PaymentFailed />} />
           <Route path="/ai" element={<Ai/>}/>
-          <Route path="/auth-success" element={<AuthSuccess />} />
 
           
           <Route path="*" element={<NotFound/>}/>
