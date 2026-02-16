@@ -48,6 +48,15 @@ const allowedOrigins = [
   /\.onrender\.com$/, // Allows ALL Render domains
 ];
 
+// Add this before your routes
+app.use((req, res, next) => {
+  // Remove double slashes from URL path
+  if (req.url.includes('//')) {
+    req.url = req.url.replace(/\/+/g, '/');
+  }
+  next();
+});
+
 app.use(cors({
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps or curl requests)

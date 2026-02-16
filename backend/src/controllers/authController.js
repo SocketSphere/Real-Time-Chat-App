@@ -108,7 +108,9 @@ export const verifyEmail = async (req, res) => {
       { expiresIn: "2d" }
     );
 
-    res.redirect(`${process.env.FRONTEND_URL}/auth-success?token=${jwtToken}`);
+    // Remove trailing slash from FRONTEND_URL if it exists
+    const frontendUrl = process.env.FRONTEND_URL.replace(/\/$/, '');
+    res.redirect(`${frontendUrl}/auth-success?token=${jwtToken}`);
 
   } catch (err) {
     res.status(500).send("Verification failed");
