@@ -27,6 +27,8 @@ import PaymentFailed from './pages/PaymentFailed';
 import { ThemeProvider } from "./components/theme-provider";
 import Ai from "./components/ai"
 import AuthSuccess from "./pages/AuthSuccess";
+import BlogList from './components/BlogList';
+import BlogPost from './components/BlogPost';
 
 function App() {
   useNotificationCount();
@@ -53,6 +55,8 @@ function App() {
           <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/payment-failed" element={<PaymentFailed />} />
           <Route path="/ai" element={<Ai/>}/>
+          <Route path="/blog" element={<BlogList />} />
+          <Route path="/blog/:slug" element={<BlogPost />} />
 
           
           <Route path="*" element={<NotFound/>}/>

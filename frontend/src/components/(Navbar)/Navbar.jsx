@@ -114,6 +114,7 @@ const Navbar = () => {
   const navItems = [
     { name: "Home", path: "/", action: () => handleNavigation() },
     { name: "About Us", path: "/about-us", action: () => handleNavigation() },
+    { name: "Blog", path: "/blog", action: () => handleNavigation() },
     // { name: "Chat", path: "/chat", action: () => handleNavigation() },
     { name: "Pricing", path: null, action: () => handleScrollToPricing() },
   ];
